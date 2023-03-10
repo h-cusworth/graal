@@ -1,0 +1,13 @@
+diff --git a/config.sub b/config.sub
+index 14b5150..2d45bc5 100644
+--- a/config.sub
++++ b/config.sub
+@@ -1104,7 +1104,7 @@ case $cpu-$vendor in
+ 	xscale-* | xscalee[bl]-*)
+ 		cpu=`echo "$cpu" | sed 's/^xscale/arm/'`
+ 		;;
+-	arm64-*)
++	arm64-* | aarch64c-* )
+ 		cpu=aarch64
+ 		;;
+ 

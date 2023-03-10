@@ -190,6 +190,12 @@ suite = {
             "optional" : True,
           }
         },
+        "freebsd" : {
+          "aarch64" : {
+            "digest" : "sha512:422e1078fe5d9e2f71c04ca2bbefef4e09cf9675d132c7531f1fb17330e2b1f9441470541b66c8db2f3d8e105d167e25a78dc11aada524ed623b1ae9a4cfdeeb",
+            "urls" : ["{urlbase}/hsdis-aarch64-linux-fcc9b70ac91c00db8a50b0d4345490a68e3743e1.tar.gz"],
+          },
+        },
       },
     },
   },
