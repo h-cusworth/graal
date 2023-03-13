@@ -764,8 +764,10 @@ class LibffiBuilderProject(mx.AbstractNativeProject, mx_native.NativeDependency)
             configure_args = ['--disable-dependency-tracking',
                               '--disable-shared',
                               '--with-pic',
-                              ' CFLAGS="{}"'.format(' '.join(['-g', '-O3'] + (['-m64'] if mx.get_os() == 'solaris' else []))),
+                              'CFLAGS="{}"'.format(' '.join(['-g', '-O3'] + (['-m64'] if mx.get_os() == 'solaris' else []))),
                               'CPPFLAGS="-DNO_JAVA_RAW_API"',
+                              'CC=clang' if mx.is_freebsd() else '',
+                              'LDFLAGS=-fuse-ld=lld' if mx.is_freebsd() else '',
                              ]
 
             self.delegate.buildEnv = dict(
