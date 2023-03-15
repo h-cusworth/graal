@@ -61,7 +61,9 @@
 #else // !_WIN32
 
 #include <stdint.h>
+#if !defined(__FreeBSD__)
 #include <alloca.h>
+#endif
 
 #endif
 

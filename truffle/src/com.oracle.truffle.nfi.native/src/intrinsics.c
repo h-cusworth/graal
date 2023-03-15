@@ -48,7 +48,7 @@
 
 #if defined(__linux__)
 #define ERRNO_LOCATION __errno_location
-#elif defined(__APPLE__) && defined(__MACH__)
+#elif defined(__APPLE__) && defined(__MACH__) || defined(__FreeBSD__)
 #define ERRNO_LOCATION __error
 #elif defined(__sun) && defined(__SVR4)
 #define ERRNO_LOCATION ___errno
