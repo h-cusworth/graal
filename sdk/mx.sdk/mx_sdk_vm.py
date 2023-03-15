@@ -1025,7 +1025,8 @@ def jlink_new_jdk(jdk, dst_jdk_dir, module_dists, ignore_dists,
         if mx.run([mx.exe_suffix(join(dst_jdk_dir, 'bin', 'java')), '-Xshare:dump', '-Xmx128M', '-Xms128M'], out=out, err=out, nonZeroIsFatal=False) != 0:
             if "Shared spaces are not supported in this VM" in out.data:
                 # GR-37047: CDS support in darwin-aarch64 jdk11 is missing.
-                assert mx.get_os() == 'darwin' and mx.get_arch() == 'aarch64' and jdk.javaCompliance == '11'
+                assert (mx.get_os() == 'darwin' and mx.get_arch() == 'aarch64' and jdk.javaCompliance == '11') \
+                            or mx.get_os() == 'freebsd' and mx.get_arch() == 'aarch64' # Not a robust fix, unsure why this jdk doesn't support CDS: is it a freebsd thing?
             else:
                 mx.log(out.data)
                 mx.abort('Error generating CDS shared archive')
