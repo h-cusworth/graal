@@ -46,6 +46,7 @@ public final class OSUtils {
         Darwin,
         Linux,
         Solaris,
+        FreeBSD,
         Windows
     }
 
@@ -64,6 +65,9 @@ public final class OSUtils {
         }
         if (name.equals("Mac OS X") || name.equals("Darwin")) {
             return OS.Darwin;
+        }
+        if (name.equals("FreeBSD")) {
+            return OS.FreeBSD;
         }
         if (name.startsWith("Windows")) {
             return OS.Windows;

@@ -75,6 +75,7 @@ public class NFITest {
     static final String TEST_BACKEND = System.getProperty("native.test.backend");
 
     static final boolean IS_LINUX = System.getProperty("os.name").equals("Linux");
+    static final boolean IS_FREEBSD = System.getProperty("os.name").equals("FreeBSD");
     static final boolean IS_DARWIN = System.getProperty("os.name").equals("Mac OS X") || System.getProperty("os.name").equals("Darwin");
     static final boolean IS_WINDOWS = System.getProperty("os.name").startsWith("Windows");
 
@@ -84,14 +85,14 @@ public class NFITest {
 
     protected static String getLibPath(String lib) {
         String filename;
-        if (IS_LINUX) {
+        if (IS_LINUX || IS_FREEBSD) {
             filename = String.format("lib%s.so", lib);
         } else if (IS_DARWIN) {
             filename = String.format("lib%s.dylib", lib);
         } else {
             assert IS_WINDOWS;
             filename = String.format("%s.dll", lib);
-        }
+        } 
 
         String propName = "native.test.path";
         if (TEST_BACKEND != null) {
