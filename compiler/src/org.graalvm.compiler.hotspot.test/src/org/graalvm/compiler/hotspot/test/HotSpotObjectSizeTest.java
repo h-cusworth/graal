@@ -29,6 +29,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.graalvm.collections.Pair;
+import org.graalvm.compiler.hotspot.GraalHotSpotVMConfig;
+import org.graalvm.compiler.hotspot.HotSpotGraalCompiler;
+import jdk.vm.ci.hotspot.HotSpotJVMCIRuntime;
 import org.graalvm.compiler.test.AddExports;
 import org.junit.Test;
 
@@ -46,11 +49,23 @@ public class HotSpotObjectSizeTest extends HotSpotGraalCompilerTest {
     @Test
     public void testNewInstance() throws InstantiationException, InvalidInstalledCodeException {
         List<Pair<Object, Long>> objects = new ArrayList<>();
-        objects.add(Pair.create(new Object(), 16L));
-        objects.add(Pair.create(new String(), 24L));
-        objects.add(Pair.create(new byte[1], 24L));
-        objects.add(Pair.create(new boolean[1][1], 24L));
-        objects.add(Pair.create(new long[64], 528L));
+        // MOJO: Fix for FreeBSD aarch64 openjdk17 port which is forced to disable CompressedClassPointers
+        HotSpotGraalCompiler compiler = (HotSpotGraalCompiler) HotSpotJVMCIRuntime.runtime().getCompiler();
+        GraalHotSpotVMConfig config = compiler.getGraalRuntime().getVMConfig();
+        boolean useCompressedClassPointers = config.useCompressedClassPointers;
+        if (useCompressedClassPointers) {
+            objects.add(Pair.create(new Object(), 16L));
+            objects.add(Pair.create(new String(), 24L));
+            objects.add(Pair.create(new byte[1], 24L));
+            objects.add(Pair.create(new boolean[1][1], 24L));
+            objects.add(Pair.create(new long[64], 528L));
+        } else {
+            objects.add(Pair.create(new Object(), 16L));
+            objects.add(Pair.create(new String(), 32L));
+            objects.add(Pair.create(new byte[1], 32L));
+            objects.add(Pair.create(new boolean[1][1], 32L));
+            objects.add(Pair.create(new long[64], 536L));
+        }
 
         // We cannot pass the following uninitialized instance to interpreter. However, passing it
         // to a compiled method is fine as long as its content is never read.
