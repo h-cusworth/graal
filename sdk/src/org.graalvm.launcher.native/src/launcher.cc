@@ -91,7 +91,7 @@
 #define NMT_ARG_NAME "XX:NativeMemoryTracking"
 #define NMT_ENV_NAME "NMT_LEVEL_"
 
-#if defined (__linux__)
+#if defined (__linux__)|| defined (__FreeBSD__)
     #include <dlfcn.h>
     #include <stdlib.h>
     #include <libgen.h>
@@ -174,7 +174,7 @@ bool exists(std::string filename) {
 
 /* get the path to the current executable */
 std::string exe_path() {
-    #if defined (__linux__)
+    #if defined (__linux__) || defined (__FreeBSD__)
         char *realPath = realpath("/proc/self/exe", NULL);
     #elif defined (__APPLE__)
         char path[PATH_MAX];
@@ -227,7 +227,7 @@ CreateJVM load_vm_lib(std::string liblangPath) {
     if (debug) {
         std::cout << "Loading library " << liblangPath << std::endl;
     }
-#if defined (__linux__) || defined (__APPLE__)
+#if defined (__linux__) || defined (__APPLE__) || defined (__FreeBSD__)
         void* jvmHandle = dlopen(liblangPath.c_str(), RTLD_NOW);
         if (jvmHandle != NULL) {
             return (CreateJVM) dlsym(jvmHandle, "JNI_CreateJavaVM");

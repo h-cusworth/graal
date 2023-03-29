@@ -2931,10 +2931,12 @@ class NativeLibraryLauncherProject(mx_native.DefaultNativeProject):
     @property
     def ldlibs(self):
         _dynamic_ldlibs = []
-        if not mx.is_windows():
+        if not mx.is_windows() and not mx.is_freebsd():
             _dynamic_ldlibs += ['-ldl']
         if mx.is_darwin():
             _dynamic_ldlibs += ['-framework', 'Foundation']
+        if mx.is_freebsd():
+            _dynamic_ldlibs += ['-fuse-ld=lld']
         return super(NativeLibraryLauncherProject, self).ldlibs + _dynamic_ldlibs
 
     def default_language_home_relative_libpath(self):
