@@ -84,7 +84,7 @@ def _lib_versioned(arg):
     name, version = arg.split('.')
     if mx.is_darwin():
         return "lib" + name + "." + version + ".dylib"
-    elif mx.is_linux() or mx.is_openbsd() or mx.is_sunos():
+    elif mx.is_linux() or mx.is_openbsd() or mx.is_sunos() or mx.is_freebsd():
         return "lib" + name + ".so." + version
     elif mx.is_windows():
         return name + ".dll"

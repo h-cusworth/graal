@@ -357,6 +357,12 @@ suite = {
                         "digest" : "sha512:1c3169ea3dd1acad39aea2a99c49c756945d2714d1fa5f414af62de0d359767117579b8033b9a1365e8fcb71f906c0b75cb87d51697675829941b0564bfd58dc",
                     }
                 },
+                "freebsd" : {
+                    "aarch64" : {
+                        "urls" : ["https://lafo.ssw.uni-linz.ac.at/pub/graal-external-deps/visualvm/visualvm-1089-linux-aarch64.tar.gz"],
+                        "digest" : "sha512:8987f5c0f3922df71dbc33249a15c5840b3e2164a6ace1dd14730542e9536ab11dd332ceff41b6b16900f9bfca9bc779f83e06bec30ec28c1915d1b8830e00ea",
+                    },
+                },
             }
         },
     },
