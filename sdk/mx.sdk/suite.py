@@ -207,6 +207,12 @@ suite = {
             "digest" : "sha512:e673283920f6c1ee7ef635ab166aa6fe54b6d6933166555ba3ce5e34b3f235888fbdeab8d56b71835ace7ff8667508e9379784218ab472e6bd8d25982bbbf6a2",
           }
         },
+        "freebsd" : {
+          "aarch64" : {
+            "urls" : ["http://localhost/llvm-morello.tar.gz"],
+            "digest" : "sha512:4fac47e388489f9349015d244915218719583c8cd143a903bc14b5b0a7d99144c0730b3186cd5dd0f1e9072069b339c4ce8d45a5d0b872e6475fe29f95110e63",
+          }
+        },
         "<others>": {
           "<others>": {
             "optional": True,

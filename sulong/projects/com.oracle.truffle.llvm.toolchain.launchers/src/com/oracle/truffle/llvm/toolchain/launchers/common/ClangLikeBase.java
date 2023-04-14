@@ -32,6 +32,7 @@ package com.oracle.truffle.llvm.toolchain.launchers.common;
 import com.oracle.truffle.llvm.toolchain.launchers.darwin.DarwinLinker;
 import com.oracle.truffle.llvm.toolchain.launchers.linux.LinuxLinker;
 import com.oracle.truffle.llvm.toolchain.launchers.windows.WindowsLinker;
+import com.oracle.truffle.llvm.toolchain.launchers.freebsd.FreeBSDLinker;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -221,6 +222,8 @@ public abstract class ClangLikeBase extends Driver {
             return WindowsLinker.LLD_LINK.equals(linker) || WindowsLinker.LLD_LINK_NO_EXE.equals(linker);
         } else if (os == OS.DARWIN) {
             return DarwinLinker.LD_NAME.equals(linker);
+        } else if (os == OS.FREEBSD) {
+            return FreeBSDLinker.LLD.equals(linker);
         } else {
             return false;
         }
@@ -229,6 +232,8 @@ public abstract class ClangLikeBase extends Driver {
     protected void getLinkerArgs(List<String> sulongArgs) {
         if (os == OS.LINUX) {
             sulongArgs.addAll(Arrays.asList("-fuse-ld=" + getLLVMExecutable(LinuxLinker.LLD), "-Wl," + String.join(",", LinuxLinker.getLinkerFlags())));
+        } else if (os == OS.FREEBSD) {
+            sulongArgs.addAll(Arrays.asList("-fuse-ld=" + getLLVMExecutable(FreeBSDLinker.LLD)));
         } else if (os == OS.WINDOWS) {
             /*
              * This should rather be `"-fuse-ld=" + getLLVMExecutable(WindowsLinker.LLD_LINK)` to be

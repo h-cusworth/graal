@@ -63,6 +63,7 @@ public class Driver {
 
         WINDOWS,
         DARWIN,
+        FREEBSD,
         LINUX;
 
         private static OS findCurrent() {
@@ -75,6 +76,9 @@ public class Driver {
             }
             if (name.startsWith("Windows")) {
                 return WINDOWS;
+            }
+            if (name.startsWith("FreeBSD")) {
+                return FREEBSD;
             }
             throw new IllegalArgumentException("unknown OS: " + name);
         }
