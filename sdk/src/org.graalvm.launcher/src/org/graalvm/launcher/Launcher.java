@@ -508,6 +508,7 @@ public abstract class Launcher {
         switch (OS.current) {
             case Linux:
             case Darwin:
+            case FreeBSD:
             case Solaris:
                 return new String[]{basename};
             case Windows:
@@ -1082,6 +1083,7 @@ public abstract class Launcher {
     protected enum OS {
         Darwin,
         Linux,
+        FreeBSD,
         Solaris,
         Windows;
 
@@ -1089,6 +1091,9 @@ public abstract class Launcher {
             final String name = System.getProperty("os.name");
             if (name.equals("Linux")) {
                 return Linux;
+            }
+            if (name.equals("FreeBSD")) {
+                return FreeBSD;
             }
             if (name.equals("SunOS")) {
                 return Solaris;

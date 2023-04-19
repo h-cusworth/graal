@@ -32,6 +32,10 @@
 
 struct stat64;
 
+#ifdef __FreeBSD__
+typedef struct stat64 struct stat;
+#endif
+
 int __sulong_stat(const char *path, struct stat *buf) {
     return stat(path, buf);
 }

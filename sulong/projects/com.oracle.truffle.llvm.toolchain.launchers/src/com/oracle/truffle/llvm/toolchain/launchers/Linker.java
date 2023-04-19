@@ -32,6 +32,7 @@ package com.oracle.truffle.llvm.toolchain.launchers;
 import static com.oracle.truffle.llvm.toolchain.launchers.common.Driver.OS;
 
 import com.oracle.truffle.llvm.toolchain.launchers.darwin.DarwinLinker;
+import com.oracle.truffle.llvm.toolchain.launchers.freebsd.FreeBSDLinker;
 import com.oracle.truffle.llvm.toolchain.launchers.linux.LinuxLinker;
 import com.oracle.truffle.llvm.toolchain.launchers.windows.WindowsLinker;
 
@@ -43,6 +44,8 @@ public final class Linker {
             DarwinLinker.link(args);
         } else if (os == OS.WINDOWS) {
             WindowsLinker.link(args);
+        } else if (os == OS.FREEBSD) {
+            FreeBSDLinker.link(args);
         } else {
             LinuxLinker.link(args);
         }

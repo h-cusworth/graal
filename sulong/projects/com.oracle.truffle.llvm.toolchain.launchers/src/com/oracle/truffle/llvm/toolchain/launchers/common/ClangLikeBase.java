@@ -195,12 +195,15 @@ public abstract class ClangLikeBase extends Driver {
 
     protected void getCompilerArgs(List<String> sulongArgs) {
         // use -gdwarf-5 instead of -g to enable source file checksums
-        sulongArgs.addAll(Arrays.asList("-flto=full", "-gdwarf-5", "-O1"));
+        // sulongArgs.addAll(Arrays.asList("-flto=full", "-gdwarf-5", "-O1"));
         sulongArgs.addAll(getVectorInstructionSetFlags());
 
         if (os == OS.WINDOWS) {
             sulongArgs.add("-stdlib++-isystem");
             sulongArgs.add(getSulongHome().resolve("include").resolve("c++").resolve("v1").toString());
+        }
+        if (os == OS.FREEBSD) {
+            sulongArgs.add("-fuse-ld=lld");
         }
     }
 
@@ -232,8 +235,8 @@ public abstract class ClangLikeBase extends Driver {
     protected void getLinkerArgs(List<String> sulongArgs) {
         if (os == OS.LINUX) {
             sulongArgs.addAll(Arrays.asList("-fuse-ld=" + getLLVMExecutable(LinuxLinker.LLD), "-Wl," + String.join(",", LinuxLinker.getLinkerFlags())));
-        } else if (os == OS.FREEBSD) {
-            sulongArgs.addAll(Arrays.asList("-fuse-ld=" + getLLVMExecutable(FreeBSDLinker.LLD)));
+        // } else if (os == OS.FREEBSD) {
+        //     sulongArgs.addAll(Arrays.asList("-fuse-ld=" + getLLVMExecutable(FreeBSDLinker.LLD)));
         } else if (os == OS.WINDOWS) {
             /*
              * This should rather be `"-fuse-ld=" + getLLVMExecutable(WindowsLinker.LLD_LINK)` to be

@@ -82,6 +82,11 @@ public abstract class BasicPlatformCapability<S extends Enum<S> & LLVMSyscallEnt
                 return new LinuxAArch64PlatformCapability(loadCxxLibraries);
             }
         }
+        if (LLVMInfo.SYSNAME.equalsIgnoreCase("freebsd")) {
+            if (LLVMInfo.MACHINE.equalsIgnoreCase("aarch64")) {
+                return new FreeBSDAArch64PlatformCapability(loadCxxLibraries);
+            }
+        }
         if (LLVMInfo.SYSNAME.equalsIgnoreCase("mac os x")) {
             if (LLVMInfo.MACHINE.equalsIgnoreCase("x86_64")) {
                 return new DarwinAMD64PlatformCapability(loadCxxLibraries);
@@ -93,6 +98,7 @@ public abstract class BasicPlatformCapability<S extends Enum<S> & LLVMSyscallEnt
         if (LLVMInfo.SYSNAME.toLowerCase(Locale.ROOT).startsWith("windows") && LLVMInfo.MACHINE.equalsIgnoreCase("x86_64")) {
             return new WindowsAMD64PlatformCapability(loadCxxLibraries);
         }
+
         return new UnknownBasicPlatformCapability(loadCxxLibraries);
     }
 

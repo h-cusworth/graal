@@ -77,7 +77,7 @@ public class Driver {
             if (name.startsWith("Windows")) {
                 return WINDOWS;
             }
-            if (name.startsWith("FreeBSD")) {
+            if (name.equals("FreeBSD")) {
                 return FREEBSD;
             }
             throw new IllegalArgumentException("unknown OS: " + name);

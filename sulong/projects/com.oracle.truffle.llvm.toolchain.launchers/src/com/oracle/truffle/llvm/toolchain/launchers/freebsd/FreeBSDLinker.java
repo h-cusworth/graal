@@ -10,15 +10,15 @@ import java.util.List;
 
 public final class FreeBSDLinker extends Driver {
 
-    public static final String LLD = "ld.lld";
+    public static final String LLD = "lld";
 
     private FreeBSDLinker() {
         super(LLD);
     }
 
-    // public static List<String> getLinkerFlags() {
-        // return Arrays.asList("--mllvm=-lto-embed-bitcode=optimized", "--lto-O0");
-    // }
+    public static List<String> getLinkerFlags() {
+        return Arrays.asList("--mllvm=-lto-embed-bitcode=optimized", "--lto-O0", "-fuse-ld=lld");
+    }
 
     public static void link(String[] args) {
         new FreeBSDLinker().doLink(args);
@@ -28,7 +28,7 @@ public final class FreeBSDLinker extends Driver {
         List<String> sulongArgs = new ArrayList<>();
         sulongArgs.add(exe);
         sulongArgs.add("-L" + getSulongHome().resolve(ClangLike.NATIVE_PLATFORM).resolve("lib"));
-        // sulongArgs.addAll(FreeBSDLinker.getLinkerFlags());
+        sulongArgs.addAll(FreeBSDLinker.getLinkerFlags());
         List<String> userArgs = Arrays.asList(args);
         boolean verbose = userArgs.contains("-v");
         runDriver(sulongArgs, userArgs, verbose, false, false);

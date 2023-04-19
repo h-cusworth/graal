@@ -207,6 +207,7 @@ public abstract class PlatformCapability<S extends Enum<S> & LLVMSyscallEntry> i
 
     public enum OS {
         Linux,
+        FreeBSD,
         Windows,
         Darwin;
     }
