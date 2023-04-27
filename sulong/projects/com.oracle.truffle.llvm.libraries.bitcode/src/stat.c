@@ -69,6 +69,8 @@ int fstatat(int fd, const char *path, struct stat *buf, int flag) {
     return __sulong_fstatat(fd, path, buf, flag);
 }
 
+#ifndef __FreeBSD__
+
 int stat64(const char *path, struct stat64 *buf) {
     return __sulong_stat64(path, buf);
 }
@@ -84,3 +86,4 @@ int lstat64(const char *path, struct stat64 *buf) {
 int fstatat64(int fd, const char *path, struct stat64 *buf, int flag) {
     return __sulong_fstatat64(fd, path, buf, flag);
 }
+#endif
