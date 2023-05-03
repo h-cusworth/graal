@@ -235,8 +235,8 @@ public abstract class ClangLikeBase extends Driver {
     protected void getLinkerArgs(List<String> sulongArgs) {
         if (os == OS.LINUX) {
             sulongArgs.addAll(Arrays.asList("-fuse-ld=" + getLLVMExecutable(LinuxLinker.LLD), "-Wl," + String.join(",", LinuxLinker.getLinkerFlags())));
-        // } else if (os == OS.FREEBSD) {
-        //     sulongArgs.addAll(Arrays.asList("-fuse-ld=" + getLLVMExecutable(FreeBSDLinker.LLD)));
+        } else if (os == OS.FREEBSD) {
+            sulongArgs.addAll(Arrays.asList("-fuse-ld=" + FreeBSDLinker.LLD, "-Wl," + String.join(",", FreeBSDLinker.getLinkerFlags())));
         } else if (os == OS.WINDOWS) {
             /*
              * This should rather be `"-fuse-ld=" + getLLVMExecutable(WindowsLinker.LLD_LINK)` to be

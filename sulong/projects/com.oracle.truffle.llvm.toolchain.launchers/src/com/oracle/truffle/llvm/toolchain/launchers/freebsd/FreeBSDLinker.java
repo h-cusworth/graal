@@ -17,7 +17,7 @@ public final class FreeBSDLinker extends Driver {
     }
 
     public static List<String> getLinkerFlags() {
-        return Arrays.asList("--mllvm=-lto-embed-bitcode=optimized", "--lto-O0", "-fuse-ld=lld");
+        return Arrays.asList("--mllvm=-lto-embed-bitcode=optimized", "--lto-O0");
     }
 
     public static void link(String[] args) {
@@ -27,7 +27,9 @@ public final class FreeBSDLinker extends Driver {
     private void doLink(String[] args) {
         List<String> sulongArgs = new ArrayList<>();
         sulongArgs.add(exe);
+        sulongArgs.add("-fuse-ld=lld");
         sulongArgs.add("-L" + getSulongHome().resolve(ClangLike.NATIVE_PLATFORM).resolve("lib"));
+        // sulongArgs.addAll(Arrays.asList("-fuse-ld=lld", "--mllvm=-lto-embed-bitcode=optimized", "--lto-O0"));
         sulongArgs.addAll(FreeBSDLinker.getLinkerFlags());
         List<String> userArgs = Arrays.asList(args);
         boolean verbose = userArgs.contains("-v");
