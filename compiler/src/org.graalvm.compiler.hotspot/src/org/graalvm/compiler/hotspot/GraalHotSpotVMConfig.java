@@ -40,6 +40,7 @@ import jdk.vm.ci.hotspot.HotSpotResolvedJavaMethod;
 import jdk.vm.ci.hotspot.HotSpotVMConfigStore;
 import jdk.vm.ci.meta.MetaAccessProvider;
 import jdk.vm.ci.meta.ResolvedJavaMethod;
+import jdk.internal.vm.memory.MemoryAddress;
 
 /**
  * Used to access native configuration details.
@@ -165,7 +166,7 @@ public class GraalHotSpotVMConfig extends GraalHotSpotVMConfigAccess {
     public final int allocatePrefetchStepSize = getFlag("AllocatePrefetchStepSize", Integer.class);
     public final int allocatePrefetchDistance = getFlag("AllocatePrefetchDistance", Integer.class);
 
-    private final long universeCollectedHeap = getFieldValue("CompilerToVM::Data::Universe_collectedHeap", Long.class, "CollectedHeap*");
+    private final long universeCollectedHeap = getFieldValue("CompilerToVM::Data::Universe_collectedHeap", MemoryAddress.class, "CollectedHeap*");
     private final int collectedHeapTotalCollectionsOffset = getFieldOffset("CollectedHeap::_total_collections", Integer.class, "unsigned int");
 
     public long gcTotalCollectionsAddress() {
@@ -178,7 +179,7 @@ public class GraalHotSpotVMConfig extends GraalHotSpotVMConfigAccess {
     public final boolean useCompressedOops = getFlag("UseCompressedOops", Boolean.class);
     public final boolean useCompressedClassPointers = getFlag("UseCompressedClassPointers", Boolean.class);
 
-    public final long narrowOopBase = getFieldValue("CompilerToVM::Data::Universe_narrow_oop_base", Long.class, "address");
+    public final MemoryAddress narrowOopBase = getFieldValue("CompilerToVM::Data::Universe_narrow_oop_base", MemoryAddress.class, "address");
     public final int narrowOopShift = getFieldValue("CompilerToVM::Data::Universe_narrow_oop_shift", Integer.class, "int");
     public final int objectAlignment = getFlag("ObjectAlignmentInBytes", Integer.class);
 
@@ -187,7 +188,7 @@ public class GraalHotSpotVMConfig extends GraalHotSpotVMConfigAccess {
     }
 
     public final int narrowKlassSize = getFieldValue("CompilerToVM::Data::sizeof_narrowKlass", Integer.class, "int");
-    public final long narrowKlassBase = getFieldValue("CompilerToVM::Data::Universe_narrow_klass_base", Long.class, "address");
+    public final MemoryAddress narrowKlassBase = getFieldValue("CompilerToVM::Data::Universe_narrow_klass_base", MemoryAddress.class, "address");
     public final int narrowKlassShift = getFieldValue("CompilerToVM::Data::Universe_narrow_klass_shift", Integer.class, "int");
     public final int logKlassAlignment = getConstant("LogKlassAlignmentInBytes", Integer.class);
 
@@ -417,7 +418,7 @@ public class GraalHotSpotVMConfig extends GraalHotSpotVMConfigAccess {
      * Bit pattern that represents a non-oop. Neither the high bits nor the low bits of this value
      * are allowed to look like (respectively) the high or low bits of a real oop.
      */
-    public final long nonOopBits = getFieldValue("CompilerToVM::Data::Universe_non_oop_bits", Long.class, "void*");
+    public final MemoryAddress nonOopBits = getFieldValue("CompilerToVM::Data::Universe_non_oop_bits", MemoryAddress.class, "void*");
 
     public final long verifyOopCounterAddress = getFieldAddress("StubRoutines::_verify_oop_count", "jint");
     public final long verifyOopMask = getFieldValue("CompilerToVM::Data::Universe_verify_oop_mask", Long.class, "uintptr_t");
@@ -426,13 +427,13 @@ public class GraalHotSpotVMConfig extends GraalHotSpotVMConfigAccess {
     public final int logOfHRGrainBytes = getFieldValue("HeapRegion::LogOfHRGrainBytes", Integer.class, "int");
 
     public final int cardtableShift = getFieldValue("CompilerToVM::Data::cardtable_shift", Integer.class, "int");
-    public final long cardtableStartAddress;
+    public final MemoryAddress cardtableStartAddress;
     {
         // JDK-8237497
         if (JDK < 15) {
-            cardtableStartAddress = getFieldValue("CompilerToVM::Data::cardtable_start_address", Long.class, "jbyte*");
+            cardtableStartAddress = getFieldValue("CompilerToVM::Data::cardtable_start_address", MemoryAddress.class, "jbyte*");
         } else {
-            cardtableStartAddress = getFieldValue("CompilerToVM::Data::cardtable_start_address", Long.class, "CardTable::CardValue*");
+            cardtableStartAddress = getFieldValue("CompilerToVM::Data::cardtable_start_address", MemoryAddress.class, "CardTable::CardValue*");
         }
     }
 
@@ -487,32 +488,32 @@ public class GraalHotSpotVMConfig extends GraalHotSpotVMConfigAccess {
     // available
     public final int zvaLength = access.getFieldValue("VM_Version::_zva_length", Integer.class, "int", Integer.MAX_VALUE);
 
-    public final long inlineCacheMissStub = getFieldValue("CompilerToVM::Data::SharedRuntime_ic_miss_stub", Long.class, "address");
-    public final long handleWrongMethodStub = getFieldValue("CompilerToVM::Data::SharedRuntime_handle_wrong_method_stub", Long.class, "address");
+    public final MemoryAddress inlineCacheMissStub = getFieldValue("CompilerToVM::Data::SharedRuntime_ic_miss_stub", MemoryAddress.class, "address");
+    public final MemoryAddress handleWrongMethodStub = getFieldValue("CompilerToVM::Data::SharedRuntime_handle_wrong_method_stub", MemoryAddress.class, "address");
 
-    public final long deoptBlobUnpack = getFieldValue("CompilerToVM::Data::SharedRuntime_deopt_blob_unpack", Long.class, "address");
-    public final long deoptBlobUnpackWithExceptionInTLS = getFieldValue("CompilerToVM::Data::SharedRuntime_deopt_blob_unpack_with_exception_in_tls", Long.class, "address");
-    public final long deoptBlobUncommonTrap = getFieldValue("CompilerToVM::Data::SharedRuntime_deopt_blob_uncommon_trap", Long.class, "address");
+    public final MemoryAddress deoptBlobUnpack = getFieldValue("CompilerToVM::Data::SharedRuntime_deopt_blob_unpack", MemoryAddress.class, "address");
+    public final MemoryAddress deoptBlobUnpackWithExceptionInTLS = getFieldValue("CompilerToVM::Data::SharedRuntime_deopt_blob_unpack_with_exception_in_tls", MemoryAddress.class, "address");
+    public final MemoryAddress deoptBlobUncommonTrap = getFieldValue("CompilerToVM::Data::SharedRuntime_deopt_blob_uncommon_trap", MemoryAddress.class, "address");
 
-    public final long codeCacheLowBound = getFieldValue("CodeCache::_low_bound", Long.class, "address");
-    public final long codeCacheHighBound = getFieldValue("CodeCache::_high_bound", Long.class, "address");
+    public final MemoryAddress codeCacheLowBound = getFieldValue("CodeCache::_low_bound", MemoryAddress.class, "address");
+    public final MemoryAddress codeCacheHighBound = getFieldValue("CodeCache::_high_bound", MemoryAddress.class, "address");
 
-    public final long updateBytesCRC32Stub = getFieldValue("StubRoutines::_updateBytesCRC32", Long.class, "address");
-    public final long crcTableAddress = getFieldValue("StubRoutines::_crc_table_adr", Long.class, "address");
+    public final MemoryAddress updateBytesCRC32Stub = getFieldValue("StubRoutines::_updateBytesCRC32", MemoryAddress.class, "address");
+    public final MemoryAddress crcTableAddress = getFieldValue("StubRoutines::_crc_table_adr", MemoryAddress.class, "address");
 
-    public final long md5ImplCompress = getFieldValue("StubRoutines::_md5_implCompress", Long.class, "address", 0L, JVMCI ? JDK >= 17 : JDK >= 19);
-    public final long md5ImplCompressMultiBlock = getFieldValue("StubRoutines::_md5_implCompressMB", Long.class, "address", 0L, JVMCI ? JDK >= 17 : JDK >= 19);
-    public final long sha1ImplCompress = getFieldValue("StubRoutines::_sha1_implCompress", Long.class, "address");
-    public final long sha1ImplCompressMultiBlock = getFieldValue("StubRoutines::_sha1_implCompressMB", Long.class, "address");
-    public final long sha256ImplCompress = getFieldValue("StubRoutines::_sha256_implCompress", Long.class, "address");
-    public final long sha256ImplCompressMultiBlock = getFieldValue("StubRoutines::_sha256_implCompressMB", Long.class, "address");
-    public final long sha512ImplCompress = getFieldValue("StubRoutines::_sha512_implCompress", Long.class, "address");
-    public final long sha512ImplCompressMultiBlock = getFieldValue("StubRoutines::_sha512_implCompressMB", Long.class, "address");
-    public final long sha3ImplCompress = getFieldValue("StubRoutines::_sha3_implCompress", Long.class, "address", 0L, JVMCI ? JDK >= 17 : JDK >= 19);
-    public final long sha3ImplCompressMultiBlock = getFieldValue("StubRoutines::_sha3_implCompressMB", Long.class, "address", 0L, JVMCI ? JDK >= 17 : JDK >= 19);
+    public final MemoryAddress md5ImplCompress = getFieldValue("StubRoutines::_md5_implCompress", MemoryAddress.class, "address", null, JVMCI ? JDK >= 17 : JDK >= 19);
+    public final MemoryAddress md5ImplCompressMultiBlock = getFieldValue("StubRoutines::_md5_implCompressMB", MemoryAddress.class, "address", null, JVMCI ? JDK >= 17 : JDK >= 19);
+    public final MemoryAddress sha1ImplCompress = getFieldValue("StubRoutines::_sha1_implCompress", MemoryAddress.class, "address");
+    public final MemoryAddress sha1ImplCompressMultiBlock = getFieldValue("StubRoutines::_sha1_implCompressMB", MemoryAddress.class, "address");
+    public final MemoryAddress sha256ImplCompress = getFieldValue("StubRoutines::_sha256_implCompress", MemoryAddress.class, "address");
+    public final MemoryAddress sha256ImplCompressMultiBlock = getFieldValue("StubRoutines::_sha256_implCompressMB", MemoryAddress.class, "address");
+    public final MemoryAddress sha512ImplCompress = getFieldValue("StubRoutines::_sha512_implCompress", MemoryAddress.class, "address");
+    public final MemoryAddress sha512ImplCompressMultiBlock = getFieldValue("StubRoutines::_sha512_implCompressMB", MemoryAddress.class, "address");
+    public final MemoryAddress sha3ImplCompress = getFieldValue("StubRoutines::_sha3_implCompress", MemoryAddress.class, "address", null, JVMCI ? JDK >= 17 : JDK >= 19);
+    public final MemoryAddress sha3ImplCompressMultiBlock = getFieldValue("StubRoutines::_sha3_implCompressMB", MemoryAddress.class, "address", null, JVMCI ? JDK >= 17 : JDK >= 19);
 
-    public final long base64EncodeBlock = getFieldValue("StubRoutines::_base64_encodeBlock", Long.class, "address");
-    public final long base64DecodeBlock = getFieldValue("StubRoutines::_base64_decodeBlock", Long.class, "address");
+    public final MemoryAddress base64EncodeBlock = getFieldValue("StubRoutines::_base64_encodeBlock", MemoryAddress.class, "address");
+    public final MemoryAddress base64DecodeBlock = getFieldValue("StubRoutines::_base64_decodeBlock", MemoryAddress.class, "address");
 
     public static final boolean base64DecodeBlockHasIsMIMEParameter() {
         try {
@@ -523,51 +524,51 @@ public class GraalHotSpotVMConfig extends GraalHotSpotVMConfigAccess {
         }
     }
 
-    public final long crc32cTableTddr = getFieldValue("StubRoutines::_crc32c_table_addr", Long.class, "address");
-    public final long updateBytesCRC32C = getFieldValue("StubRoutines::_updateBytesCRC32C", Long.class, "address");
-    public final long updateBytesAdler32 = getFieldValue("StubRoutines::_updateBytesAdler32", Long.class, "address");
-    public final long montgomeryMultiply = getFieldValue("StubRoutines::_montgomeryMultiply", Long.class, "address");
-    public final long montgomerySquare = getFieldValue("StubRoutines::_montgomerySquare", Long.class, "address");
+    public final MemoryAddress crc32cTableTddr = getFieldValue("StubRoutines::_crc32c_table_addr", MemoryAddress.class, "address");
+    public final MemoryAddress updateBytesCRC32C = getFieldValue("StubRoutines::_updateBytesCRC32C", MemoryAddress.class, "address");
+    public final MemoryAddress updateBytesAdler32 = getFieldValue("StubRoutines::_updateBytesAdler32", MemoryAddress.class, "address");
+    public final MemoryAddress montgomeryMultiply = getFieldValue("StubRoutines::_montgomeryMultiply", MemoryAddress.class, "address");
+    public final MemoryAddress montgomerySquare = getFieldValue("StubRoutines::_montgomerySquare", MemoryAddress.class, "address");
 
-    public final long bigIntegerLeftShiftWorker = getFieldValue("StubRoutines::_bigIntegerLeftShiftWorker", Long.class, "address");
-    public final long bigIntegerRightShiftWorker = getFieldValue("StubRoutines::_bigIntegerRightShiftWorker", Long.class, "address");
+    public final MemoryAddress bigIntegerLeftShiftWorker = getFieldValue("StubRoutines::_bigIntegerLeftShiftWorker", MemoryAddress.class, "address");
+    public final MemoryAddress bigIntegerRightShiftWorker = getFieldValue("StubRoutines::_bigIntegerRightShiftWorker", MemoryAddress.class, "address");
 
-    public final long electronicCodeBookEncrypt = getFieldValue("StubRoutines::_electronicCodeBook_encryptAESCrypt", Long.class, "address");
-    public final long electronicCodeBookDecrypt = getFieldValue("StubRoutines::_electronicCodeBook_decryptAESCrypt", Long.class, "address");
+    public final MemoryAddress electronicCodeBookEncrypt = getFieldValue("StubRoutines::_electronicCodeBook_encryptAESCrypt", MemoryAddress.class, "address");
+    public final MemoryAddress electronicCodeBookDecrypt = getFieldValue("StubRoutines::_electronicCodeBook_decryptAESCrypt", MemoryAddress.class, "address");
 
-    public final long throwDelayedStackOverflowErrorEntry = getFieldValue("StubRoutines::_throw_delayed_StackOverflowError_entry", Long.class, "address");
+    public final MemoryAddress throwDelayedStackOverflowErrorEntry = getFieldValue("StubRoutines::_throw_delayed_StackOverflowError_entry", MemoryAddress.class, "address");
 
-    public final long jbyteArraycopy = getFieldValue("StubRoutines::_jbyte_arraycopy", Long.class, "address");
-    public final long jshortArraycopy = getFieldValue("StubRoutines::_jshort_arraycopy", Long.class, "address");
-    public final long jintArraycopy = getFieldValue("StubRoutines::_jint_arraycopy", Long.class, "address");
-    public final long jlongArraycopy = getFieldValue("StubRoutines::_jlong_arraycopy", Long.class, "address");
-    public final long oopArraycopy = getFieldValue("StubRoutines::_oop_arraycopy", Long.class, "address");
-    public final long oopArraycopyUninit = getFieldValue("StubRoutines::_oop_arraycopy_uninit", Long.class, "address");
-    public final long jbyteDisjointArraycopy = getFieldValue("StubRoutines::_jbyte_disjoint_arraycopy", Long.class, "address");
-    public final long jshortDisjointArraycopy = getFieldValue("StubRoutines::_jshort_disjoint_arraycopy", Long.class, "address");
-    public final long jintDisjointArraycopy = getFieldValue("StubRoutines::_jint_disjoint_arraycopy", Long.class, "address");
-    public final long jlongDisjointArraycopy = getFieldValue("StubRoutines::_jlong_disjoint_arraycopy", Long.class, "address");
-    public final long oopDisjointArraycopy = getFieldValue("StubRoutines::_oop_disjoint_arraycopy", Long.class, "address");
-    public final long oopDisjointArraycopyUninit = getFieldValue("StubRoutines::_oop_disjoint_arraycopy_uninit", Long.class, "address");
-    public final long jbyteAlignedArraycopy = getFieldValue("StubRoutines::_arrayof_jbyte_arraycopy", Long.class, "address");
-    public final long jshortAlignedArraycopy = getFieldValue("StubRoutines::_arrayof_jshort_arraycopy", Long.class, "address");
-    public final long jintAlignedArraycopy = getFieldValue("StubRoutines::_arrayof_jint_arraycopy", Long.class, "address");
-    public final long jlongAlignedArraycopy = getFieldValue("StubRoutines::_arrayof_jlong_arraycopy", Long.class, "address");
-    public final long oopAlignedArraycopy = getFieldValue("StubRoutines::_arrayof_oop_arraycopy", Long.class, "address");
-    public final long oopAlignedArraycopyUninit = getFieldValue("StubRoutines::_arrayof_oop_arraycopy_uninit", Long.class, "address");
-    public final long jbyteAlignedDisjointArraycopy = getFieldValue("StubRoutines::_arrayof_jbyte_disjoint_arraycopy", Long.class, "address");
-    public final long jshortAlignedDisjointArraycopy = getFieldValue("StubRoutines::_arrayof_jshort_disjoint_arraycopy", Long.class, "address");
-    public final long jintAlignedDisjointArraycopy = getFieldValue("StubRoutines::_arrayof_jint_disjoint_arraycopy", Long.class, "address");
-    public final long jlongAlignedDisjointArraycopy = getFieldValue("StubRoutines::_arrayof_jlong_disjoint_arraycopy", Long.class, "address");
-    public final long oopAlignedDisjointArraycopy = getFieldValue("StubRoutines::_arrayof_oop_disjoint_arraycopy", Long.class, "address");
-    public final long oopAlignedDisjointArraycopyUninit = getFieldValue("StubRoutines::_arrayof_oop_disjoint_arraycopy_uninit", Long.class, "address");
-    public final long checkcastArraycopy = getFieldValue("StubRoutines::_checkcast_arraycopy", Long.class, "address");
-    public final long checkcastArraycopyUninit = getFieldValue("StubRoutines::_checkcast_arraycopy_uninit", Long.class, "address");
-    public final long unsafeArraycopy = getFieldValue("StubRoutines::_unsafe_arraycopy", Long.class, "address");
-    public final long genericArraycopy = getFieldValue("StubRoutines::_generic_arraycopy", Long.class, "address");
+    public final MemoryAddress jbyteArraycopy = getFieldValue("StubRoutines::_jbyte_arraycopy", MemoryAddress.class, "address");
+    public final MemoryAddress jshortArraycopy = getFieldValue("StubRoutines::_jshort_arraycopy", MemoryAddress.class, "address");
+    public final MemoryAddress jintArraycopy = getFieldValue("StubRoutines::_jint_arraycopy", MemoryAddress.class, "address");
+    public final MemoryAddress jlongArraycopy = getFieldValue("StubRoutines::_jlong_arraycopy", MemoryAddress.class, "address");
+    public final MemoryAddress oopArraycopy = getFieldValue("StubRoutines::_oop_arraycopy", MemoryAddress.class, "address");
+    public final MemoryAddress oopArraycopyUninit = getFieldValue("StubRoutines::_oop_arraycopy_uninit", MemoryAddress.class, "address");
+    public final MemoryAddress jbyteDisjointArraycopy = getFieldValue("StubRoutines::_jbyte_disjoint_arraycopy", MemoryAddress.class, "address");
+    public final MemoryAddress jshortDisjointArraycopy = getFieldValue("StubRoutines::_jshort_disjoint_arraycopy", MemoryAddress.class, "address");
+    public final MemoryAddress jintDisjointArraycopy = getFieldValue("StubRoutines::_jint_disjoint_arraycopy", MemoryAddress.class, "address");
+    public final MemoryAddress jlongDisjointArraycopy = getFieldValue("StubRoutines::_jlong_disjoint_arraycopy", MemoryAddress.class, "address");
+    public final MemoryAddress oopDisjointArraycopy = getFieldValue("StubRoutines::_oop_disjoint_arraycopy", MemoryAddress.class, "address");
+    public final MemoryAddress oopDisjointArraycopyUninit = getFieldValue("StubRoutines::_oop_disjoint_arraycopy_uninit", MemoryAddress.class, "address");
+    public final MemoryAddress jbyteAlignedArraycopy = getFieldValue("StubRoutines::_arrayof_jbyte_arraycopy", MemoryAddress.class, "address");
+    public final MemoryAddress jshortAlignedArraycopy = getFieldValue("StubRoutines::_arrayof_jshort_arraycopy", MemoryAddress.class, "address");
+    public final MemoryAddress jintAlignedArraycopy = getFieldValue("StubRoutines::_arrayof_jint_arraycopy", MemoryAddress.class, "address");
+    public final MemoryAddress jlongAlignedArraycopy = getFieldValue("StubRoutines::_arrayof_jlong_arraycopy", MemoryAddress.class, "address");
+    public final MemoryAddress oopAlignedArraycopy = getFieldValue("StubRoutines::_arrayof_oop_arraycopy", MemoryAddress.class, "address");
+    public final MemoryAddress oopAlignedArraycopyUninit = getFieldValue("StubRoutines::_arrayof_oop_arraycopy_uninit", MemoryAddress.class, "address");
+    public final MemoryAddress jbyteAlignedDisjointArraycopy = getFieldValue("StubRoutines::_arrayof_jbyte_disjoint_arraycopy", MemoryAddress.class, "address");
+    public final MemoryAddress jshortAlignedDisjointArraycopy = getFieldValue("StubRoutines::_arrayof_jshort_disjoint_arraycopy", MemoryAddress.class, "address");
+    public final MemoryAddress jintAlignedDisjointArraycopy = getFieldValue("StubRoutines::_arrayof_jint_disjoint_arraycopy", MemoryAddress.class, "address");
+    public final MemoryAddress jlongAlignedDisjointArraycopy = getFieldValue("StubRoutines::_arrayof_jlong_disjoint_arraycopy", MemoryAddress.class, "address");
+    public final MemoryAddress oopAlignedDisjointArraycopy = getFieldValue("StubRoutines::_arrayof_oop_disjoint_arraycopy", MemoryAddress.class, "address");
+    public final MemoryAddress oopAlignedDisjointArraycopyUninit = getFieldValue("StubRoutines::_arrayof_oop_disjoint_arraycopy_uninit", MemoryAddress.class, "address");
+    public final MemoryAddress checkcastArraycopy = getFieldValue("StubRoutines::_checkcast_arraycopy", MemoryAddress.class, "address");
+    public final MemoryAddress checkcastArraycopyUninit = getFieldValue("StubRoutines::_checkcast_arraycopy_uninit", MemoryAddress.class, "address");
+    public final MemoryAddress unsafeArraycopy = getFieldValue("StubRoutines::_unsafe_arraycopy", MemoryAddress.class, "address");
+    public final MemoryAddress genericArraycopy = getFieldValue("StubRoutines::_generic_arraycopy", MemoryAddress.class, "address");
 
     // JDK19 Continuation stubs
-    public final long contDoYield = getFieldValue("StubRoutines::_cont_doYield", Long.class, "address", 0L, JDK == 19);
+    public final MemoryAddress contDoYield = getFieldValue("StubRoutines::_cont_doYield", MemoryAddress.class, "address", 0L, JDK == 19);
 
     // Allocation stubs that throw an exception when allocation fails
     public final long newInstanceAddress = getAddress("JVMCIRuntime::new_instance");
@@ -657,13 +658,13 @@ public class GraalHotSpotVMConfig extends GraalHotSpotVMConfigAccess {
 
     public final long javaTimeMillisAddress = getAddress("os::javaTimeMillis");
     public final long javaTimeNanosAddress = getAddress("os::javaTimeNanos");
-    public final long arithmeticSinAddress = getFieldValue("CompilerToVM::Data::dsin", Long.class, "address");
-    public final long arithmeticCosAddress = getFieldValue("CompilerToVM::Data::dcos", Long.class, "address");
-    public final long arithmeticTanAddress = getFieldValue("CompilerToVM::Data::dtan", Long.class, "address");
-    public final long arithmeticExpAddress = getFieldValue("CompilerToVM::Data::dexp", Long.class, "address");
-    public final long arithmeticLogAddress = getFieldValue("CompilerToVM::Data::dlog", Long.class, "address");
-    public final long arithmeticLog10Address = getFieldValue("CompilerToVM::Data::dlog10", Long.class, "address");
-    public final long arithmeticPowAddress = getFieldValue("CompilerToVM::Data::dpow", Long.class, "address");
+    public final MemoryAddress arithmeticSinAddress = getFieldValue("CompilerToVM::Data::dsin", MemoryAddress.class, "address");
+    public final MemoryAddress arithmeticCosAddress = getFieldValue("CompilerToVM::Data::dcos", MemoryAddress.class, "address");
+    public final MemoryAddress arithmeticTanAddress = getFieldValue("CompilerToVM::Data::dtan", MemoryAddress.class, "address");
+    public final MemoryAddress arithmeticExpAddress = getFieldValue("CompilerToVM::Data::dexp", MemoryAddress.class, "address");
+    public final MemoryAddress arithmeticLogAddress = getFieldValue("CompilerToVM::Data::dlog", MemoryAddress.class, "address");
+    public final MemoryAddress arithmeticLog10Address = getFieldValue("CompilerToVM::Data::dlog10", MemoryAddress.class, "address");
+    public final MemoryAddress arithmeticPowAddress = getFieldValue("CompilerToVM::Data::dpow", MemoryAddress.class, "address");
 
     public final long fremAddress = getAddress("SharedRuntime::frem");
     public final long dremAddress = getAddress("SharedRuntime::drem");
