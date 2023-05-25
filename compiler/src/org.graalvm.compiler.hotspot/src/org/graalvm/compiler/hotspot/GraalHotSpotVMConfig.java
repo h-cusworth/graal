@@ -122,39 +122,39 @@ public class GraalHotSpotVMConfig extends GraalHotSpotVMConfigAccess {
      * been exported, so we have to check both if the flag is on and if we have the stub.
      */
     public boolean useSHA1Intrinsics() {
-        return useSHA1Intrinsics && sha1ImplCompress != 0 && sha1ImplCompressMultiBlock != 0;
+        return useSHA1Intrinsics && !sha1ImplCompress.isNullPointer() && !sha1ImplCompressMultiBlock.isNullPointer();
     }
 
     public boolean useSHA256Intrinsics() {
-        return useSHA256Intrinsics && sha256ImplCompress != 0 && sha256ImplCompressMultiBlock != 0;
+        return useSHA256Intrinsics && !sha256ImplCompress.isNullPointer() && !sha256ImplCompressMultiBlock.isNullPointer();
     }
 
     public boolean useSHA512Intrinsics() {
-        return useSHA512Intrinsics && sha512ImplCompress != 0 && sha512ImplCompressMultiBlock != 0;
+        return useSHA512Intrinsics && !sha512ImplCompress.isNullPointer() && !sha512ImplCompressMultiBlock.isNullPointer();
     }
 
     public boolean useMontgomeryMultiplyIntrinsic() {
-        return useMontgomeryMultiplyIntrinsic && montgomeryMultiply != 0;
+        return useMontgomeryMultiplyIntrinsic && !montgomeryMultiply.isNullPointer();
     }
 
     public boolean useMontgomerySquareIntrinsic() {
-        return useMontgomerySquareIntrinsic && montgomerySquare != 0;
+        return useMontgomerySquareIntrinsic && !montgomerySquare.isNullPointer();
     }
 
     public boolean inlineNotify() {
-        return notifyAddress != 0;
+        return notifyAddress != null && !notifyAddress.isNullPointer();
     }
 
     public boolean inlineNotifyAll() {
-        return notifyAllAddress != 0;
+        return notifyAllAddress != null && !notifyAllAddress.isNullPointer();
     }
 
     public boolean useCRC32Intrinsics() {
-        return useCRC32Intrinsics && updateBytesCRC32Stub != 0;
+        return useCRC32Intrinsics && !updateBytesCRC32Stub.isNullPointer();
     }
 
     public boolean useCRC32CIntrinsics() {
-        return useCRC32CIntrinsics && updateBytesCRC32C != 0;
+        return useCRC32CIntrinsics && !updateBytesCRC32C.isNullPointer();
     }
 
     public final boolean useG1GC = getFlag("UseG1GC", Boolean.class);
@@ -169,8 +169,8 @@ public class GraalHotSpotVMConfig extends GraalHotSpotVMConfigAccess {
     private final MemoryAddress universeCollectedHeap = getFieldValue("CompilerToVM::Data::Universe_collectedHeap", MemoryAddress.class, "CollectedHeap*");
     private final int collectedHeapTotalCollectionsOffset = getFieldOffset("CollectedHeap::_total_collections", Integer.class, "unsigned int");
 
-    public long gcTotalCollectionsAddress() {
-        return universeCollectedHeap + collectedHeapTotalCollectionsOffset;
+    public MemoryAddress gcTotalCollectionsAddress() {
+        return universeCollectedHeap.add(collectedHeapTotalCollectionsOffset);
     }
 
     public final boolean useDeferredInitBarriers = getFlag("ReduceInitialCardMarks", Boolean.class);
@@ -585,21 +585,21 @@ public class GraalHotSpotVMConfig extends GraalHotSpotVMConfigAccess {
     public final MemoryAddress invokeJavaMethodAddress = getAddress("JVMCIRuntime::invoke_static_method_one_arg");
 
     public boolean areNullAllocationStubsAvailable() {
-        return newInstanceOrNullAddress != 0L;
+        return newInstanceOrNullAddress != null && !newInstanceOrNullAddress.isNullPointer();
     }
 
     /**
      * Checks that HotSpot implements all or none of the allocate-or-null stubs.
      */
     private boolean checkNullAllocationStubs() {
-        if (newInstanceOrNullAddress == 0L) {
-            assert newArrayOrNullAddress == 0L;
-            assert newMultiArrayOrNullAddress == 0L;
-            assert dynamicNewInstanceOrNullAddress == 0L;
+        if (newInstanceOrNullAddress == null) {
+            assert newArrayOrNullAddress == null;
+            assert newMultiArrayOrNullAddress == null;
+            assert dynamicNewInstanceOrNullAddress == null;
         } else {
-            assert newArrayOrNullAddress != 0L;
-            assert newMultiArrayOrNullAddress != 0L;
-            assert dynamicNewInstanceOrNullAddress != 0L;
+            assert newArrayOrNullAddress != null && !newArrayOrNullAddress.isNullPointer();
+            assert newMultiArrayOrNullAddress != null && !newMultiArrayOrNullAddress.isNullPointer();
+            assert dynamicNewInstanceOrNullAddress != null && !dynamicNewInstanceOrNullAddress.isNullPointer();
         }
         return true;
     }
