@@ -69,7 +69,7 @@ final class AArch64HotSpotDirectVirtualCallOp extends DirectCallOp {
         // valid object which causes the called function to call a handler that installs the
         // correct inline cache value here.
         crb.recordMark(invokeKind == InvokeKind.Virtual ? HotSpotMarkId.INVOKEVIRTUAL : HotSpotMarkId.INVOKEINTERFACE);
-        masm.movNativeAddress(inlineCacheRegister, config.nonOopBits);
+        masm.movNativeAddress(inlineCacheRegister, config.nonOopBits.getRawAddress());
         if (config.supportsMethodHandleDeoptimizationEntry() && config.isMethodHandleCall((HotSpotResolvedJavaMethod) callTarget)) {
             crb.setNeedsMHDeoptHandler();
         }

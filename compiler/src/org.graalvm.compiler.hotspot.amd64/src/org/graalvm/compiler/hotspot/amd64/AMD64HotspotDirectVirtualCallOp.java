@@ -63,6 +63,6 @@ final class AMD64HotspotDirectVirtualCallOp extends DirectCallOp {
         if (config.supportsMethodHandleDeoptimizationEntry() && config.isMethodHandleCall((HotSpotResolvedJavaMethod) callTarget)) {
             crb.setNeedsMHDeoptHandler();
         }
-        AMD64Call.directInlineCacheCall(crb, masm, callTarget, invokeKind == InvokeKind.Virtual ? HotSpotMarkId.INVOKEVIRTUAL : HotSpotMarkId.INVOKEINTERFACE, config.nonOopBits, state);
+        AMD64Call.directInlineCacheCall(crb, masm, callTarget, invokeKind == InvokeKind.Virtual ? HotSpotMarkId.INVOKEVIRTUAL : HotSpotMarkId.INVOKEINTERFACE, config.nonOopBits.getRawAddress(), state);
     }
 }
