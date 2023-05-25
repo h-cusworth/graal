@@ -166,7 +166,7 @@ public class GraalHotSpotVMConfig extends GraalHotSpotVMConfigAccess {
     public final int allocatePrefetchStepSize = getFlag("AllocatePrefetchStepSize", Integer.class);
     public final int allocatePrefetchDistance = getFlag("AllocatePrefetchDistance", Integer.class);
 
-    private final long universeCollectedHeap = getFieldValue("CompilerToVM::Data::Universe_collectedHeap", MemoryAddress.class, "CollectedHeap*");
+    private final MemoryAddress universeCollectedHeap = getFieldValue("CompilerToVM::Data::Universe_collectedHeap", MemoryAddress.class, "CollectedHeap*");
     private final int collectedHeapTotalCollectionsOffset = getFieldOffset("CollectedHeap::_total_collections", Integer.class, "unsigned int");
 
     public long gcTotalCollectionsAddress() {
@@ -571,18 +571,18 @@ public class GraalHotSpotVMConfig extends GraalHotSpotVMConfigAccess {
     public final MemoryAddress contDoYield = getFieldValue("StubRoutines::_cont_doYield", MemoryAddress.class, "address", 0L, JDK == 19);
 
     // Allocation stubs that throw an exception when allocation fails
-    public final long newInstanceAddress = getAddress("JVMCIRuntime::new_instance");
-    public final long newArrayAddress = getAddress("JVMCIRuntime::new_array");
-    public final long newMultiArrayAddress = getAddress("JVMCIRuntime::new_multi_array");
-    public final long dynamicNewInstanceAddress = getAddress("JVMCIRuntime::dynamic_new_instance");
+    public final MemoryAddress newInstanceAddress = getAddress("JVMCIRuntime::new_instance");
+    public final MemoryAddress newArrayAddress = getAddress("JVMCIRuntime::new_array");
+    public final MemoryAddress newMultiArrayAddress = getAddress("JVMCIRuntime::new_multi_array");
+    public final MemoryAddress dynamicNewInstanceAddress = getAddress("JVMCIRuntime::dynamic_new_instance");
 
     // Allocation stubs that return null when allocation fails
-    public final long newInstanceOrNullAddress = getAddress("JVMCIRuntime::new_instance_or_null");
-    public final long newArrayOrNullAddress = getAddress("JVMCIRuntime::new_array_or_null");
-    public final long newMultiArrayOrNullAddress = getAddress("JVMCIRuntime::new_multi_array_or_null");
-    public final long dynamicNewInstanceOrNullAddress = getAddress("JVMCIRuntime::dynamic_new_instance_or_null");
+    public final MemoryAddress newInstanceOrNullAddress = getAddress("JVMCIRuntime::new_instance_or_null");
+    public final MemoryAddress newArrayOrNullAddress = getAddress("JVMCIRuntime::new_array_or_null");
+    public final MemoryAddress newMultiArrayOrNullAddress = getAddress("JVMCIRuntime::new_multi_array_or_null");
+    public final MemoryAddress dynamicNewInstanceOrNullAddress = getAddress("JVMCIRuntime::dynamic_new_instance_or_null");
 
-    public final long invokeJavaMethodAddress = getAddress("JVMCIRuntime::invoke_static_method_one_arg");
+    public final MemoryAddress invokeJavaMethodAddress = getAddress("JVMCIRuntime::invoke_static_method_one_arg");
 
     public boolean areNullAllocationStubsAvailable() {
         return newInstanceOrNullAddress != 0L;
@@ -604,13 +604,13 @@ public class GraalHotSpotVMConfig extends GraalHotSpotVMConfigAccess {
         return true;
     }
 
-    public final long vmMessageAddress = getAddress("JVMCIRuntime::vm_message");
-    public final long identityHashCodeAddress = getAddress("JVMCIRuntime::identity_hash_code");
-    public final long exceptionHandlerForPcAddress = getAddress("JVMCIRuntime::exception_handler_for_pc");
-    public final long monitorenterAddress = getAddress("JVMCIRuntime::monitorenter");
-    public final long monitorexitAddress = getAddress("JVMCIRuntime::monitorexit");
-    public final long notifyAddress = getAddress("JVMCIRuntime::object_notify");
-    public final long notifyAllAddress = getAddress("JVMCIRuntime::object_notifyAll");
+    public final MemoryAddress vmMessageAddress = getAddress("JVMCIRuntime::vm_message");
+    public final MemoryAddress identityHashCodeAddress = getAddress("JVMCIRuntime::identity_hash_code");
+    public final MemoryAddress exceptionHandlerForPcAddress = getAddress("JVMCIRuntime::exception_handler_for_pc");
+    public final MemoryAddress monitorenterAddress = getAddress("JVMCIRuntime::monitorenter");
+    public final MemoryAddress monitorexitAddress = getAddress("JVMCIRuntime::monitorexit");
+    public final MemoryAddress notifyAddress = getAddress("JVMCIRuntime::object_notify");
+    public final MemoryAddress notifyAllAddress = getAddress("JVMCIRuntime::object_notifyAll");
 
     // This flag indicates that support for loom is enabled.
     public final boolean continuationsEnabled = getFieldValue("CompilerToVM::Data::continuations_enabled", Boolean.class, "bool", JDK > 19, JDK >= 19 && jvmciGE(JVMCI_23_0_b04));
@@ -637,27 +637,27 @@ public class GraalHotSpotVMConfig extends GraalHotSpotVMConfigAccess {
     // This should be true when loom is enabled on 19 but that still needs to be exposed by JVMCI
     public final boolean updateHeldMonitorCount = JDK >= 20;
 
-    public final long throwAndPostJvmtiExceptionAddress = getAddress("JVMCIRuntime::throw_and_post_jvmti_exception");
-    public final long throwKlassExternalNameExceptionAddress = getAddress("JVMCIRuntime::throw_klass_external_name_exception");
-    public final long throwClassCastExceptionAddress = getAddress("JVMCIRuntime::throw_class_cast_exception");
-    public final long logPrimitiveAddress = getAddress("JVMCIRuntime::log_primitive");
-    public final long logObjectAddress = getAddress("JVMCIRuntime::log_object");
-    public final long logPrintfAddress = getAddress("JVMCIRuntime::log_printf");
-    public final long vmErrorAddress = getAddress("JVMCIRuntime::vm_error");
-    public final long loadAndClearExceptionAddress = getAddress("JVMCIRuntime::load_and_clear_exception");
-    public final long writeBarrierPreAddress = getAddress("JVMCIRuntime::write_barrier_pre");
-    public final long writeBarrierPostAddress = getAddress("JVMCIRuntime::write_barrier_post");
-    public final long validateObject = getAddress("JVMCIRuntime::validate_object");
+    public final MemoryAddress throwAndPostJvmtiExceptionAddress = getAddress("JVMCIRuntime::throw_and_post_jvmti_exception");
+    public final MemoryAddress throwKlassExternalNameExceptionAddress = getAddress("JVMCIRuntime::throw_klass_external_name_exception");
+    public final MemoryAddress throwClassCastExceptionAddress = getAddress("JVMCIRuntime::throw_class_cast_exception");
+    public final MemoryAddress logPrimitiveAddress = getAddress("JVMCIRuntime::log_primitive");
+    public final MemoryAddress logObjectAddress = getAddress("JVMCIRuntime::log_object");
+    public final MemoryAddress logPrintfAddress = getAddress("JVMCIRuntime::log_printf");
+    public final MemoryAddress vmErrorAddress = getAddress("JVMCIRuntime::vm_error");
+    public final MemoryAddress loadAndClearExceptionAddress = getAddress("JVMCIRuntime::load_and_clear_exception");
+    public final MemoryAddress writeBarrierPreAddress = getAddress("JVMCIRuntime::write_barrier_pre");
+    public final MemoryAddress writeBarrierPostAddress = getAddress("JVMCIRuntime::write_barrier_post");
+    public final MemoryAddress validateObject = getAddress("JVMCIRuntime::validate_object");
 
-    public final long testDeoptimizeCallInt = getAddress("JVMCIRuntime::test_deoptimize_call_int");
+    public final MemoryAddress testDeoptimizeCallInt = getAddress("JVMCIRuntime::test_deoptimize_call_int");
 
-    public final long registerFinalizerAddress = getAddress("SharedRuntime::register_finalizer");
-    public final long exceptionHandlerForReturnAddressAddress = getAddress("SharedRuntime::exception_handler_for_return_address");
-    public final long osrMigrationEndAddress = getAddress("SharedRuntime::OSR_migration_end");
-    public final long enableStackReservedZoneAddress = getAddress("SharedRuntime::enable_stack_reserved_zone");
+    public final MemoryAddress registerFinalizerAddress = getAddress("SharedRuntime::register_finalizer");
+    public final MemoryAddress exceptionHandlerForReturnAddressAddress = getAddress("SharedRuntime::exception_handler_for_return_address");
+    public final MemoryAddress osrMigrationEndAddress = getAddress("SharedRuntime::OSR_migration_end");
+    public final MemoryAddress enableStackReservedZoneAddress = getAddress("SharedRuntime::enable_stack_reserved_zone");
 
-    public final long javaTimeMillisAddress = getAddress("os::javaTimeMillis");
-    public final long javaTimeNanosAddress = getAddress("os::javaTimeNanos");
+    public final MemoryAddress javaTimeMillisAddress = getAddress("os::javaTimeMillis");
+    public final MemoryAddress javaTimeNanosAddress = getAddress("os::javaTimeNanos");
     public final MemoryAddress arithmeticSinAddress = getFieldValue("CompilerToVM::Data::dsin", MemoryAddress.class, "address");
     public final MemoryAddress arithmeticCosAddress = getFieldValue("CompilerToVM::Data::dcos", MemoryAddress.class, "address");
     public final MemoryAddress arithmeticTanAddress = getFieldValue("CompilerToVM::Data::dtan", MemoryAddress.class, "address");
@@ -666,8 +666,8 @@ public class GraalHotSpotVMConfig extends GraalHotSpotVMConfigAccess {
     public final MemoryAddress arithmeticLog10Address = getFieldValue("CompilerToVM::Data::dlog10", MemoryAddress.class, "address");
     public final MemoryAddress arithmeticPowAddress = getFieldValue("CompilerToVM::Data::dpow", MemoryAddress.class, "address");
 
-    public final long fremAddress = getAddress("SharedRuntime::frem");
-    public final long dremAddress = getAddress("SharedRuntime::drem");
+    public final MemoryAddress fremAddress = getAddress("SharedRuntime::frem");
+    public final MemoryAddress dremAddress = getAddress("SharedRuntime::drem");
 
     public final int jvmciCountersSize = getFlag("JVMCICounterSize", Integer.class);
 

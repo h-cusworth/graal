@@ -34,6 +34,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import jdk.internal.vm.memory.MemoryAddress;
 import org.graalvm.compiler.debug.Assertions;
 import org.graalvm.compiler.hotspot.JVMCIVersionCheck.Version;
 
@@ -243,9 +244,9 @@ public class GraalHotSpotVMConfigAccess {
     }
 
     /**
-     * @see HotSpotVMConfigAccess#getAddress(String, Long)
+     * @see HotSpotVMConfigAccess#getAddress(String, MemoryAddress)
      */
-    public long getAddress(String name, Long notPresent, boolean expectPresent) {
+    public MemoryAddress getAddress(String name, MemoryAddress notPresent, boolean expectPresent) {
         if (isPresent(name, vmAddresses, expectPresent)) {
             return access.getAddress(name, notPresent);
         }
@@ -255,11 +256,11 @@ public class GraalHotSpotVMConfigAccess {
     /**
      * @see HotSpotVMConfigAccess#getAddress(String)
      */
-    public long getAddress(String name) {
+    public MemoryAddress getAddress(String name) {
         if (isPresent(name, vmAddresses, true)) {
-            return access.getAddress(name, 0L);
+            return access.getAddress(name, null);
         }
-        return 0L;
+        return null;
     }
 
     /**
