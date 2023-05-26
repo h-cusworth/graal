@@ -61,6 +61,7 @@ public class GraalHotSpotVMConfig extends GraalHotSpotVMConfigAccess {
 
         assert narrowKlassShift <= logKlassAlignment;
         assert narrowOopShift <= logMinObjAlignment();
+        // MOJO - TODO: CompressEncoding currently takes long as first argument to constructor (not MemoryAddress)
         oopEncoding = new CompressEncoding(narrowOopBase, narrowOopShift);
         klassEncoding = new CompressEncoding(narrowKlassBase, narrowKlassShift);
 
@@ -309,7 +310,7 @@ public class GraalHotSpotVMConfig extends GraalHotSpotVMConfigAccess {
     public final int jniEnvironmentOffset = getFieldOffset("JavaThread::_jni_environment", Integer.class, "JNIEnv");
 
     public boolean requiresReservedStackCheck(List<ResolvedJavaMethod> methods) {
-        if (enableStackReservedZoneAddress != 0 && methods != null) {
+        if (enableStackReservedZoneAddress != null && !enableStackReservedZoneAddress.isNullPointer() && methods != null) {
             for (ResolvedJavaMethod method : methods) {
                 if (method instanceof HotSpotResolvedJavaMethod && ((HotSpotResolvedJavaMethod) method).hasReservedStackAccess()) {
                     return true;
@@ -568,7 +569,7 @@ public class GraalHotSpotVMConfig extends GraalHotSpotVMConfigAccess {
     public final MemoryAddress genericArraycopy = getFieldValue("StubRoutines::_generic_arraycopy", MemoryAddress.class, "address");
 
     // JDK19 Continuation stubs
-    public final MemoryAddress contDoYield = getFieldValue("StubRoutines::_cont_doYield", MemoryAddress.class, "address", 0L, JDK == 19);
+    public final MemoryAddress contDoYield = getFieldValue("StubRoutines::_cont_doYield", MemoryAddress.class, "address", null, JDK == 19);
 
     // Allocation stubs that throw an exception when allocation fails
     public final MemoryAddress newInstanceAddress = getAddress("JVMCIRuntime::new_instance");
