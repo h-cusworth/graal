@@ -27,6 +27,7 @@ package org.graalvm.compiler.hotspot;
 import static jdk.vm.ci.hotspot.HotSpotJVMCIRuntime.runtime;
 import static org.graalvm.compiler.hotspot.HotSpotForeignCallLinkage.RegisterEffect.DESTROYS_ALL_CALLER_SAVE_REGISTERS;
 
+import jdk.internal.vm.memory.MemoryAddress;
 import org.graalvm.collections.EconomicSet;
 import org.graalvm.compiler.core.common.spi.ForeignCallDescriptor;
 import org.graalvm.compiler.core.target.Backend;
@@ -96,7 +97,7 @@ public class HotSpotForeignCallLinkageImpl extends HotSpotForeignCallTarget impl
                     WordTypes wordTypes,
                     HotSpotForeignCallsProvider foreignCalls,
                     HotSpotForeignCallDescriptor descriptor,
-                    long address,
+                    MemoryAddress address,
                     RegisterEffect effect,
                     Type outgoingCcType,
                     Type incomingCcType) {
@@ -136,7 +137,7 @@ public class HotSpotForeignCallLinkageImpl extends HotSpotForeignCallTarget impl
         return metaAccess.lookupJavaType(type);
     }
 
-    public HotSpotForeignCallLinkageImpl(HotSpotForeignCallDescriptor descriptor, long address, RegisterEffect effect,
+    public HotSpotForeignCallLinkageImpl(HotSpotForeignCallDescriptor descriptor, MemoryAddress address, RegisterEffect effect,
                     CallingConvention outgoingCallingConvention, CallingConvention incomingCallingConvention) {
         super(address);
         this.descriptor = descriptor;
@@ -150,7 +151,7 @@ public class HotSpotForeignCallLinkageImpl extends HotSpotForeignCallTarget impl
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(stub == null ? descriptor.toString() : stub.toString());
-        sb.append("@0x").append(Long.toHexString(address)).append(':').append(outgoingCallingConvention).append(":").append(incomingCallingConvention);
+        sb.append("@0x").append(Long.toHexString(address.getRawAddress())).append(':').append(outgoingCallingConvention).append(":").append(incomingCallingConvention);
         if (temporaries != null && temporaries.length != 0) {
             sb.append("; temps=");
             String sep = "";
@@ -197,7 +198,7 @@ public class HotSpotForeignCallLinkageImpl extends HotSpotForeignCallTarget impl
 
     @Override
     public void setCompiledStub(Stub stub) {
-        assert address == 0L : "cannot set stub for linkage that already has an address: " + this;
+        assert address == null || address.isNullPointer() : "cannot set stub for linkage that already has an address: " + this;
         this.stub = stub;
     }
 
@@ -206,7 +207,7 @@ public class HotSpotForeignCallLinkageImpl extends HotSpotForeignCallTarget impl
      */
     @Override
     public boolean isCompiledStub() {
-        return address == 0L || stub != null;
+        return address == null || address.isNullPointer() || stub != null;
     }
 
     @Override
@@ -227,14 +228,14 @@ public class HotSpotForeignCallLinkageImpl extends HotSpotForeignCallTarget impl
         /**
          * Address of first instruction in the stub.
          */
-        final long start;
+        final MemoryAddress start;
 
         /**
          * @see Stub#getDestroyedCallerRegisters()
          */
         final EconomicSet<Register> killedRegisters;
 
-        public CodeInfo(long start, EconomicSet<Register> killedRegisters) {
+        public CodeInfo(MemoryAddress start, EconomicSet<Register> killedRegisters) {
             this.start = start;
             this.killedRegisters = killedRegisters;
         }
@@ -250,7 +251,7 @@ public class HotSpotForeignCallLinkageImpl extends HotSpotForeignCallTarget impl
 
     @Override
     public void finalizeAddress(Backend backend) {
-        if (address == 0) {
+        if (address == null || address.isNullPointer()) {
             assert checkStubCondition();
             CodeInfo codeInfo = getCodeInfo(stub, backend);
 
@@ -269,8 +270,8 @@ public class HotSpotForeignCallLinkageImpl extends HotSpotForeignCallTarget impl
 
     @Override
     public long getAddress() {
-        assert address != 0L : "address not yet finalized: " + this;
-        return address;
+        assert address != null && !address.isNullPointer() : "address not yet finalized: " + this;
+        return address.getRawAddress();
     }
 
     @Override

@@ -36,6 +36,7 @@ import static org.graalvm.word.LocationIdentity.any;
 
 import java.util.function.BiConsumer;
 
+import jdk.internal.vm.memory.MemoryAddress;
 import org.graalvm.collections.EconomicMap;
 import org.graalvm.collections.MapCursor;
 import org.graalvm.compiler.core.common.LIRKind;
@@ -142,7 +143,7 @@ public abstract class HotSpotForeignCallsProviderImpl implements HotSpotForeignC
                         wordTypes,
                         this,
                         descriptor,
-                        0L, effect,
+                        null, effect,
                         JavaCall,
                         JavaCallee));
     }
@@ -169,9 +170,9 @@ public abstract class HotSpotForeignCallsProviderImpl implements HotSpotForeignC
      */
     public HotSpotForeignCallLinkage registerForeignCall(
                     HotSpotForeignCallDescriptor descriptor,
-                    long address,
+                    MemoryAddress address,
                     CallingConvention.Type outgoingCcType) {
-        if (address == 0) {
+        if (address == null || address.isNullPointer()) {
             throw new IllegalArgumentException("address must be non-zero");
         }
         Class<?> resultType = descriptor.getResultType();
