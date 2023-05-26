@@ -69,7 +69,8 @@ public class AArch64HotSpotForeignCallsProvider extends HotSpotHostForeignCallsP
         RegisterValue exception = r0.asValue(LIRKind.reference(word));
         RegisterValue exceptionPc = r3.asValue(LIRKind.value(word));
         CallingConvention exceptionCc = new CallingConvention(0, ILLEGAL, exception, exceptionPc);
-        register(new HotSpotForeignCallLinkageImpl(EXCEPTION_HANDLER, 0L, DESTROYS_ALL_CALLER_SAVE_REGISTERS, exceptionCc, null));
+        register(new HotSpotForeignCallLinkageImpl(EXCEPTION_HANDLER, null, DESTROYS_ALL_CALLER_SAVE_REGISTERS, exceptionCc, null));
+        // MOJO - TODO: JUMP_ADDRESS need to be updated to become a MemoryAddress instead of long
         register(new HotSpotForeignCallLinkageImpl(EXCEPTION_HANDLER_IN_CALLER, JUMP_ADDRESS, DESTROYS_ALL_CALLER_SAVE_REGISTERS, exceptionCc, null));
 
         super.initialize(providers, options);

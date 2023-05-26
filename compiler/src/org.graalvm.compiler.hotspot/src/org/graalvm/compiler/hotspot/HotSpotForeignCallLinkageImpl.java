@@ -246,6 +246,7 @@ public class HotSpotForeignCallLinkageImpl extends HotSpotForeignCallTarget impl
      * {@code com.oracle.svm.graal.hotspot.libgraal.Target_org_graalvm_compiler_hotspot_HotSpotForeignCallLinkageImpl}.
      */
     private static CodeInfo getCodeInfo(Stub stub, Backend backend) {
+        // MOJO - TODO: InstalledCode.getStart() should return a MemoryAddress
         return new CodeInfo(stub.getCode(backend).getStart(), stub.getDestroyedCallerRegisters());
     }
 
