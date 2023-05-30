@@ -188,7 +188,7 @@ public class HotSpotForeignCallLinkageImpl extends HotSpotForeignCallTarget impl
 
     @Override
     public long getMaxCallTargetOffset() {
-        return runtime().getHostJVMCIBackend().getCodeCache().getMaxCallTargetOffset(address);
+        return runtime().getHostJVMCIBackend().getCodeCache().getMaxCallTargetOffset(address.getRawAddress());
     }
 
     @Override
