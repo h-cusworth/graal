@@ -50,7 +50,7 @@ import jdk.vm.ci.services.Services;
 public class GraalHotSpotVMConfigAccess {
 
     protected final HotSpotVMConfigAccess access;
-    private final Map<String, Long> vmAddresses;
+    private final Map<String, MemoryAddress> vmAddresses;
     private final Map<String, Long> vmConstants;
     private final Map<String, VMField> vmFields;
 
@@ -331,11 +331,11 @@ public class GraalHotSpotVMConfigAccess {
     /**
      * @see HotSpotVMConfigAccess#getFieldAddress(String, String)
      */
-    public long getFieldAddress(String name, String cppType) {
+    public MemoryAddress getFieldAddress(String name, String cppType) {
         if (isPresent(name, vmFields, true)) {
             return access.getFieldAddress(name, cppType);
         }
-        return 0L;
+        return null;
     }
 
     /**
