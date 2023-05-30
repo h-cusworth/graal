@@ -204,10 +204,10 @@ public final class UnimplementedGraalIntrinsics {
             add(ignore, "java/lang/Object.notifyAll()V");
         }
 
-        if (config.base64EncodeBlock == 0L) {
+        if (config.base64EncodeBlock == null && config.base64EncodeBlock.isNullPointer()) {
             add(ignore, "java/util/Base64$Encoder.encodeBlock([BII[BIZ)V");
         }
-        if (config.base64DecodeBlock == 0L) {
+        if (config.base64DecodeBlock == null && config.base64DecodeBlock.isNullPointer()) {
             add(ignore,
                             "java/util/Base64$Decoder.decodeBlock([BII[BIZ)I",
                             "java/util/Base64$Decoder.decodeBlock([BII[BIZZ)I");
@@ -265,8 +265,8 @@ public final class UnimplementedGraalIntrinsics {
         }
         // DigestBase intrinsics
         if (HotSpotGraphBuilderPlugins.isIntrinsicName(config, "sun/security/provider/DigestBase", "implCompressMultiBlock0") &&
-                        !(config.md5ImplCompressMultiBlock != 0L || config.useSHA1Intrinsics() || config.useSHA256Intrinsics() || config.useSHA512Intrinsics() ||
-                                        config.sha3ImplCompressMultiBlock != 0L)) {
+                        !(config.md5ImplCompressMultiBlock != null || !config.md5ImplCompressMultiBlock.isNullPointer() || config.useSHA1Intrinsics() || config.useSHA256Intrinsics() || config.useSHA512Intrinsics() ||
+                                        config.sha3ImplCompressMultiBlock != null || !config.sha3ImplCompressMultiBlock.isNullPointer())) {
             add(ignore, "sun/security/provider/DigestBase.implCompressMultiBlock0([BII)I");
         }
         // SHA intrinsics
@@ -279,30 +279,30 @@ public final class UnimplementedGraalIntrinsics {
         if (!config.useSHA512Intrinsics()) {
             add(ignore, "sun/security/provider/SHA5.implCompress0([BI)V");
         }
-        if (config.updateBytesAdler32 == 0L) {
+        if (config.updateBytesAdler32 == null || config.updateBytesAdler32.isNullPointer()) {
             add(ignore,
                             "java/util/zip/Adler32.updateByteBuffer(IJII)I",
                             "java/util/zip/Adler32.updateBytes(I[BII)I");
         }
-        if (config.bigIntegerLeftShiftWorker == 0L) {
+        if (config.bigIntegerLeftShiftWorker == null || config.bigIntegerLeftShiftWorker.isNullPointer()) {
             add(ignore, "java/math/BigInteger.shiftLeftImplWorker([I[IIII)V");
         }
-        if (config.bigIntegerRightShiftWorker == 0L) {
+        if (config.bigIntegerRightShiftWorker == null || config.bigIntegerRightShiftWorker.isNullPointer()) {
             add(ignore, "java/math/BigInteger.shiftRightImplWorker([I[IIII)V");
         }
-        if (config.electronicCodeBookEncrypt == 0L) {
+        if (config.electronicCodeBookEncrypt == null || config.electronicCodeBookEncrypt.isNullPointer()) {
             add(ignore, "com/sun/crypto/provider/ElectronicCodeBook.implECBDecrypt([BII[BI)I");
         }
-        if (config.electronicCodeBookDecrypt == 0L) {
+        if (config.electronicCodeBookDecrypt == null || config.electronicCodeBookDecrypt.isNullPointer()) {
             add(ignore, "com/sun/crypto/provider/ElectronicCodeBook.implECBEncrypt([BII[BI)I");
         }
-        if (config.md5ImplCompress == 0L) {
+        if (config.md5ImplCompress == null || config.md5ImplCompress.isNullPointer()) {
             add(ignore, "sun/security/provider/MD5.implCompress0([BI)V");
         }
-        if (config.sha3ImplCompress == 0L) {
+        if (config.sha3ImplCompress == null || config.sha3ImplCompress.isNullPointer()) {
             add(ignore, "sun/security/provider/SHA3.implCompress0([BI)V");
         }
-        if (config.contDoYield == 0L) {
+        if (config.contDoYield == null || config.contDoYield.isNullPointer()) {
             add(ignore, "jdk/internal/vm/Continuation.doYield()I");
         }
 

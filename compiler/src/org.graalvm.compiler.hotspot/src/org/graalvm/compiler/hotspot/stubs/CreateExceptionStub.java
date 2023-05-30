@@ -70,7 +70,7 @@ public class CreateExceptionStub extends SnippetStub {
 
     @Fold
     static boolean reportsDeoptimization(@Fold.InjectedParameter GraalHotSpotVMConfig config) {
-        return config.deoptBlobUnpackWithExceptionInTLS != 0;
+        return config.deoptBlobUnpackWithExceptionInTLS != null && !config.deoptBlobUnpackWithExceptionInTLS.isNullPointer();
     }
 
     @Fold

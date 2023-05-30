@@ -644,8 +644,8 @@ public class HotSpotGraphBuilderPlugins {
         r.registerConditional(CipherBlockChainingAESNode.isSupported(arch), new HotSpotCipherBlockChainingCryptPlugin(CryptMode.DECRYPT));
 
         r = new Registration(plugins, "com.sun.crypto.provider.ElectronicCodeBook", replacements);
-        r.registerConditional(config.electronicCodeBookEncrypt != 0L, new ElectronicCodeBookCryptPlugin(CryptMode.ENCRYPT));
-        r.registerConditional(config.electronicCodeBookDecrypt != 0L, new ElectronicCodeBookCryptPlugin(CryptMode.DECRYPT));
+        r.registerConditional(config.electronicCodeBookEncrypt != null && !config.electronicCodeBookEncrypt.isNullPointer(), new ElectronicCodeBookCryptPlugin(CryptMode.ENCRYPT));
+        r.registerConditional(config.electronicCodeBookDecrypt != null && !config.electronicCodeBookDecrypt.isNullPointer(), new ElectronicCodeBookCryptPlugin(CryptMode.DECRYPT));
 
         r = new Registration(plugins, "com.sun.crypto.provider.CounterMode", replacements);
         r.registerConditional(CounterModeAESNode.isSupported(arch), new CounterModeCryptPlugin() {
@@ -668,7 +668,7 @@ public class HotSpotGraphBuilderPlugins {
 
     private static void registerAdler32Plugins(InvocationPlugins plugins, GraalHotSpotVMConfig config, Replacements replacements) {
         Registration r = new Registration(plugins, "java.util.zip.Adler32", replacements);
-        r.registerConditional(config.updateBytesAdler32 != 0L, new InlineOnlyInvocationPlugin("updateBytes", int.class, byte[].class, int.class, int.class) {
+        r.registerConditional(config.updateBytesAdler32 != null && !config.updateBytesAdler32.isNullPointer(), new InlineOnlyInvocationPlugin("updateBytes", int.class, byte[].class, int.class, int.class) {
             @Override
             public boolean apply(GraphBuilderContext b, ResolvedJavaMethod targetMethod, Receiver receiver, ValueNode adler, ValueNode src, ValueNode off, ValueNode len) {
                 try (InvocationPluginHelper helper = new InvocationPluginHelper(b, targetMethod)) {
@@ -679,7 +679,7 @@ public class HotSpotGraphBuilderPlugins {
                 return true;
             }
         });
-        r.registerConditional(config.updateBytesAdler32 != 0L, new InlineOnlyInvocationPlugin("updateByteBuffer", int.class, long.class, int.class, int.class) {
+        r.registerConditional(config.updateBytesAdler32 != null && !config.updateBytesAdler32.isNullPointer(), new InlineOnlyInvocationPlugin("updateByteBuffer", int.class, long.class, int.class, int.class) {
             @Override
             public boolean apply(GraphBuilderContext b, ResolvedJavaMethod targetMethod, Receiver receiver, ValueNode adler, ValueNode addr, ValueNode off, ValueNode len) {
                 ValueNode buff = b.add(new ComputeObjectAddressNode(addr, off));
@@ -720,7 +720,7 @@ public class HotSpotGraphBuilderPlugins {
                 return true;
             }
         });
-        r.registerConditional(config.bigIntegerLeftShiftWorker != 0L, new InvocationPlugin("shiftLeftImplWorker", int[].class, int[].class, int.class, int.class, int.class) {
+        r.registerConditional(config.bigIntegerLeftShiftWorker != null && !config.bigIntegerLeftShiftWorker.isNullPointer(), new InvocationPlugin("shiftLeftImplWorker", int[].class, int[].class, int.class, int.class, int.class) {
             @Override
             public boolean apply(GraphBuilderContext b, ResolvedJavaMethod targetMethod, Receiver receiver, ValueNode newArr, ValueNode oldArr, ValueNode newIdx, ValueNode shiftCount,
                             ValueNode numIter) {
@@ -736,7 +736,7 @@ public class HotSpotGraphBuilderPlugins {
                 return JavaVersionUtil.JAVA_SPEC < 14;
             }
         });
-        r.registerConditional(config.bigIntegerRightShiftWorker != 0L, new InvocationPlugin("shiftRightImplWorker", int[].class, int[].class, int.class, int.class, int.class) {
+        r.registerConditional(config.bigIntegerRightShiftWorker != null && !config.bigIntegerRightShiftWorker.isNullPointer(), new InvocationPlugin("shiftRightImplWorker", int[].class, int[].class, int.class, int.class, int.class) {
             @Override
             public boolean apply(GraphBuilderContext b, ResolvedJavaMethod targetMethod, Receiver receiver, ValueNode newArr, ValueNode oldArr, ValueNode newIdx, ValueNode shiftCount,
                             ValueNode numIter) {
@@ -778,11 +778,11 @@ public class HotSpotGraphBuilderPlugins {
     }
 
     private static void registerSHAPlugins(InvocationPlugins plugins, GraalHotSpotVMConfig config, Replacements replacements) {
-        boolean useMD5 = config.md5ImplCompressMultiBlock != 0L;
+        boolean useMD5 = config.md5ImplCompressMultiBlock != null && !config.md5ImplCompressMultiBlock.isNullPointer();
         boolean useSha1 = config.useSHA1Intrinsics();
         boolean useSha256 = config.useSHA256Intrinsics();
         boolean useSha512 = config.useSHA512Intrinsics();
-        boolean useSha3 = config.sha3ImplCompressMultiBlock != 0L;
+        boolean useSha3 = config.sha3ImplCompressMultiBlock != null && !config.sha3ImplCompressMultiBlock.isNullPointer();
 
         boolean implCompressMultiBlock0Enabled = isIntrinsicName(config, "sun/security/provider/DigestBase", "implCompressMultiBlock0") && (useMD5 || useSha1 || useSha256 || useSha512 || useSha3);
         Registration r = new Registration(plugins, "sun.security.provider.DigestBase", replacements);
@@ -817,17 +817,17 @@ public class HotSpotGraphBuilderPlugins {
         rSha512.registerConditional(useSha512, new DigestInvocationPlugin(HotSpotBackend.SHA5_IMPL_COMPRESS));
 
         Registration rSha3 = new Registration(plugins, "sun.security.provider.SHA3", replacements);
-        rSha3.registerConditional(config.sha3ImplCompress != 0L, new DigestInvocationPlugin(HotSpotBackend.SHA5_IMPL_COMPRESS));
+        rSha3.registerConditional(config.sha3ImplCompress != null && !config.sha3ImplCompress.isNullPointer(), new DigestInvocationPlugin(HotSpotBackend.SHA5_IMPL_COMPRESS));
     }
 
     private static void registerMD5Plugins(InvocationPlugins plugins, GraalHotSpotVMConfig config, Replacements replacements) {
         Registration r = new Registration(plugins, "sun.security.provider.MD5", replacements);
-        r.registerConditional(config.md5ImplCompress != 0L, new DigestInvocationPlugin(HotSpotBackend.MD5_IMPL_COMPRESS));
+        r.registerConditional(config.md5ImplCompress != null && !config.md5ImplCompress.isNullPointer(), new DigestInvocationPlugin(HotSpotBackend.MD5_IMPL_COMPRESS));
     }
 
     private static void registerBase64Plugins(InvocationPlugins plugins, GraalHotSpotVMConfig config, MetaAccessProvider metaAccess, Replacements replacements) {
         Registration r = new Registration(plugins, "java.util.Base64$Encoder", replacements);
-        r.registerConditional(config.base64EncodeBlock != 0L, new InvocationPlugin("encodeBlock", Receiver.class, byte[].class, int.class, int.class, byte[].class, int.class, boolean.class) {
+        r.registerConditional(config.base64EncodeBlock != null && !config.base64EncodeBlock.isNullPointer(), new InvocationPlugin("encodeBlock", Receiver.class, byte[].class, int.class, int.class, byte[].class, int.class, boolean.class) {
             @Override
             public boolean apply(GraphBuilderContext b, ResolvedJavaMethod targetMethod, Receiver receiver, ValueNode src,
                             ValueNode sp, ValueNode sl, ValueNode dst, ValueNode dp, ValueNode isURL) {
@@ -839,7 +839,7 @@ public class HotSpotGraphBuilderPlugins {
             }
         });
         r = new Registration(plugins, "java.util.Base64$Decoder", replacements);
-        if (config.base64DecodeBlock != 0L) {
+        if (config.base64DecodeBlock != null && !config.base64DecodeBlock.isNullPointer()) {
             if (GraalHotSpotVMConfig.base64DecodeBlockHasIsMIMEParameter()) {
                 // JDK-8268276 - added isMIME parameter
                 r.register(new InvocationPlugin("decodeBlock", Receiver.class, byte[].class, int.class, int.class, byte[].class, int.class, boolean.class, boolean.class) {
@@ -873,7 +873,7 @@ public class HotSpotGraphBuilderPlugins {
 
     private static void registerCRC32Plugins(InvocationPlugins plugins, GraalHotSpotVMConfig config, Replacements replacements) {
         Registration r = new Registration(plugins, CRC32.class, replacements);
-        r.registerConditional(config.useCRC32Intrinsics() && config.crcTableAddress != 0, new InvocationPlugin("update", int.class, int.class) {
+        r.registerConditional(config.useCRC32Intrinsics() && config.crcTableAddress != null && !config.crcTableAddress.isNullPointer(), new InvocationPlugin("update", int.class, int.class) {
             @Override
             public boolean apply(GraphBuilderContext b, ResolvedJavaMethod targetMethod, Receiver receiver, ValueNode crc, ValueNode arg) {
                 final ValueNode crcTableRawAddress = ConstantNode.forLong(config.crcTableAddress);
@@ -1026,6 +1026,6 @@ public class HotSpotGraphBuilderPlugins {
 
     private static void registerContinuationPlugins(InvocationPlugins plugins, GraalHotSpotVMConfig config, Replacements replacements) {
         Registration r = new Registration(plugins, "jdk.internal.vm.Continuation", replacements);
-        r.registerConditional(config.contDoYield != 0L, new ForeignCallPlugin(HotSpotBackend.CONTINUATION_DO_YIELD, "doYield"));
+        r.registerConditional(config.contDoYield != null && !config.contDoYield.isNullPointer(), new ForeignCallPlugin(HotSpotBackend.CONTINUATION_DO_YIELD, "doYield"));
     }
 }
