@@ -590,6 +590,7 @@ public class HotSpotReplacementsUtil {
 
     @Fold
     public static long cardTableStart(@InjectedParameter GraalHotSpotVMConfig config) {
+        // MOJO - TODO: Return type needs updating but it affects GC components
         return config.cardtableStartAddress;
     }
 
@@ -891,6 +892,7 @@ public class HotSpotReplacementsUtil {
 
     @Fold
     public static long gcTotalCollectionsAddress(@InjectedParameter GraalHotSpotVMConfig config) {
+        // MOJO - TODO: Return type needs updating but it affects GC components
         return config.gcTotalCollectionsAddress();
     }
 
