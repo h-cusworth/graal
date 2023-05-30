@@ -24,6 +24,7 @@
  */
 package org.graalvm.compiler.hotspot.stubs;
 
+import jdk.internal.vm.memory.MemoryAddress;
 import org.graalvm.compiler.core.common.LIRKind;
 import org.graalvm.compiler.core.common.spi.ForeignCallDescriptor;
 import org.graalvm.compiler.core.common.type.Stamp;
@@ -61,7 +62,7 @@ public class ForeignCallStub extends AbstractForeignCallStub {
      * @param prependThread true if the JavaThread value for the current thread is to be prepended
      *            to the arguments for the call to {@code address}
      */
-    public ForeignCallStub(OptionValues options, HotSpotJVMCIRuntime runtime, HotSpotProviders providers, long address, HotSpotForeignCallDescriptor descriptor, boolean prependThread) {
+    public ForeignCallStub(OptionValues options, HotSpotJVMCIRuntime runtime, HotSpotProviders providers, MemoryAddress address, HotSpotForeignCallDescriptor descriptor, boolean prependThread) {
         super(options, runtime, providers, address, descriptor, prependThread);
     }
 

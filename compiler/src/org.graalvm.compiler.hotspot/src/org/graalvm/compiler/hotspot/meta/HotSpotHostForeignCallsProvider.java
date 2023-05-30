@@ -99,6 +99,7 @@ import static org.graalvm.word.LocationIdentity.any;
 
 import java.util.EnumMap;
 
+import jdk.internal.vm.memory.MemoryAddress;
 import org.graalvm.collections.EconomicMap;
 import org.graalvm.compiler.core.common.spi.ForeignCallDescriptor;
 import org.graalvm.compiler.core.common.spi.ForeignCallSignature;
@@ -303,8 +304,8 @@ public abstract class HotSpotHostForeignCallsProvider extends HotSpotForeignCall
     }
 
     private void registerStubCallFunctions(OptionValues options, HotSpotProviders providers, GraalHotSpotVMConfig config) {
-        long invokeJavaMethodAddress = config.invokeJavaMethodAddress;
-        if (invokeJavaMethodAddress == 0 || IS_IN_NATIVE_IMAGE) {
+        MemoryAddress invokeJavaMethodAddress = config.invokeJavaMethodAddress;
+        if (invokeJavaMethodAddress == null || invokeJavaMethodAddress.isNullPointer() || IS_IN_NATIVE_IMAGE) {
             return;
         }
         // These functions are only used for testing purposes but their registration also ensures
@@ -319,13 +320,13 @@ public abstract class HotSpotHostForeignCallsProvider extends HotSpotForeignCall
     }
 
     private void registerArraycopyDescriptor(EconomicMap<Long, ForeignCallDescriptor> descMap, JavaKind kind, boolean aligned, boolean disjoint, boolean uninit, LocationIdentity killedLocation,
-                    long routine) {
+                    MemoryAddress routine) {
         boolean killAny = killedLocation.isAny();
         boolean killInit = killedLocation.isInit();
-        ForeignCallDescriptor desc = descMap.get(routine);
+        ForeignCallDescriptor desc = descMap.get(routine.getRawAddress());
         if (desc == null) {
             desc = buildDescriptor(kind, aligned, disjoint, uninit, killedLocation, routine);
-            descMap.put(routine, desc);
+            descMap.put(routine.getRawAddress(), desc);
         }
         if (kind.isObject()) {
             objectArraycopyDescriptors[aligned ? 1 : 0][disjoint ? 1 : 0][uninit ? 1 : 0][killAny ? 1 : 0] = desc;
@@ -334,7 +335,7 @@ public abstract class HotSpotHostForeignCallsProvider extends HotSpotForeignCall
         }
     }
 
-    private ForeignCallDescriptor buildDescriptor(JavaKind kind, boolean aligned, boolean disjoint, boolean uninit, LocationIdentity killedLocation, long routine) {
+    private ForeignCallDescriptor buildDescriptor(JavaKind kind, boolean aligned, boolean disjoint, boolean uninit, LocationIdentity killedLocation, MemoryAddress routine) {
         assert !uninit || kind == JavaKind.Object;
         boolean killAny = killedLocation.isAny();
         boolean killInit = killedLocation.isInit();
@@ -344,7 +345,7 @@ public abstract class HotSpotHostForeignCallsProvider extends HotSpotForeignCall
         return desc;
     }
 
-    private void registerCheckcastArraycopyDescriptor(boolean uninit, long routine) {
+    private void registerCheckcastArraycopyDescriptor(boolean uninit, MemoryAddress routine) {
         String name = "Object" + (uninit ? "Uninit" : "") + "CheckcastArraycopy";
         // Input:
         // c_rarg0 - source array address
@@ -361,18 +362,18 @@ public abstract class HotSpotHostForeignCallsProvider extends HotSpotForeignCall
     }
 
     private void registerArrayCopy(JavaKind kind,
-                    long routine,
-                    long alignedRoutine,
-                    long disjointRoutine,
-                    long alignedDisjointRoutine) {
+                    MemoryAddress routine,
+                    MemoryAddress alignedRoutine,
+                    MemoryAddress disjointRoutine,
+                    MemoryAddress alignedDisjointRoutine) {
         registerArrayCopy(kind, routine, alignedRoutine, disjointRoutine, alignedDisjointRoutine, false);
     }
 
     private void registerArrayCopy(JavaKind kind,
-                    long routine,
-                    long alignedRoutine,
-                    long disjointRoutine,
-                    long alignedDisjointRoutine,
+                    MemoryAddress routine,
+                    MemoryAddress alignedRoutine,
+                    MemoryAddress disjointRoutine,
+                    MemoryAddress alignedDisjointRoutine,
                     boolean uninit) {
         /*
          * Sometimes the same function is used for multiple cases so share them when that's the case
@@ -406,14 +407,14 @@ public abstract class HotSpotHostForeignCallsProvider extends HotSpotForeignCall
     public void initialize(HotSpotProviders providers, OptionValues options) {
         GraalHotSpotVMConfig c = runtime.getVMConfig();
         registerForeignCall(DEOPT_BLOB_UNPACK, c.deoptBlobUnpack, NativeCall);
-        if (c.deoptBlobUnpackWithExceptionInTLS != 0) {
+        if (c.deoptBlobUnpackWithExceptionInTLS != null && !c.deoptBlobUnpackWithExceptionInTLS.isNullPointer()) {
             registerForeignCall(DEOPT_BLOB_UNPACK_WITH_EXCEPTION_IN_TLS, c.deoptBlobUnpackWithExceptionInTLS, NativeCall);
         }
         registerForeignCall(DEOPT_BLOB_UNCOMMON_TRAP, c.deoptBlobUncommonTrap, NativeCall);
         registerForeignCall(IC_MISS_HANDLER, c.inlineCacheMissStub, NativeCall);
 
-        if (c.enableStackReservedZoneAddress != 0) {
-            assert c.throwDelayedStackOverflowErrorEntry != 0 : "both must exist";
+        if (c.enableStackReservedZoneAddress != null && !c.enableStackReservedZoneAddress.isNullPointer()) {
+            assert c.throwDelayedStackOverflowErrorEntry != null && !c.throwDelayedStackOverflowErrorEntry.isNullPointer() : "both must exist";
             registerForeignCall(ENABLE_STACK_RESERVED_ZONE, c.enableStackReservedZoneAddress, NativeCall);
             registerForeignCall(THROW_DELAYED_STACKOVERFLOW_ERROR, c.throwDelayedStackOverflowErrorEntry, NativeCall);
         }
@@ -512,10 +513,10 @@ public abstract class HotSpotHostForeignCallsProvider extends HotSpotForeignCall
         registerForeignCall(createDescriptor(GENERIC_ARRAYCOPY, LEAF_NO_VZERO, NOT_REEXECUTABLE, NamedLocationIdentity.any()), c.genericArraycopy, NativeCall);
         registerForeignCall(createDescriptor(UNSAFE_ARRAYCOPY, LEAF_NO_VZERO, NOT_REEXECUTABLE, NamedLocationIdentity.any()), c.unsafeArraycopy, NativeCall);
 
-        if (c.md5ImplCompress != 0L) {
+        if (c.md5ImplCompress != null && !c.md5ImplCompress.isNullPointer()) {
             registerForeignCall(MD5_IMPL_COMPRESS, c.md5ImplCompress, NativeCall);
         }
-        if (c.md5ImplCompressMultiBlock != 0L) {
+        if (c.md5ImplCompressMultiBlock != null && !c.md5ImplCompressMultiBlock.isNullPointer()) {
             registerForeignCall(MD5_IMPL_COMPRESS_MB, c.md5ImplCompressMultiBlock, NativeCall);
         }
         if (c.useSHA1Intrinsics()) {
@@ -530,16 +531,16 @@ public abstract class HotSpotHostForeignCallsProvider extends HotSpotForeignCall
             registerForeignCall(SHA5_IMPL_COMPRESS, c.sha512ImplCompress, NativeCall);
             registerForeignCall(SHA5_IMPL_COMPRESS_MB, c.sha512ImplCompressMultiBlock, NativeCall);
         }
-        if (c.sha3ImplCompress != 0L) {
+        if (c.sha3ImplCompress != null && !c.sha3ImplCompress.isNullPointer()) {
             registerForeignCall(SHA3_IMPL_COMPRESS, c.sha3ImplCompress, NativeCall);
         }
-        if (c.sha3ImplCompressMultiBlock != 0L) {
+        if (c.sha3ImplCompressMultiBlock != null && !c.sha3ImplCompressMultiBlock.isNullPointer()) {
             registerForeignCall(SHA3_IMPL_COMPRESS_MB, c.sha3ImplCompressMultiBlock, NativeCall);
         }
-        if (c.base64EncodeBlock != 0L) {
+        if (c.base64EncodeBlock != null && !c.base64EncodeBlock.isNullPointer()) {
             registerForeignCall(BASE64_ENCODE_BLOCK, c.base64EncodeBlock, NativeCall);
         }
-        if (c.base64DecodeBlock != 0L) {
+        if (c.base64DecodeBlock != null && !c.base64DecodeBlock.isNullPointer()) {
             registerForeignCall(BASE64_DECODE_BLOCK, c.base64DecodeBlock, NativeCall);
         }
         if (c.useMontgomeryMultiplyIntrinsic()) {
@@ -555,22 +556,22 @@ public abstract class HotSpotHostForeignCallsProvider extends HotSpotForeignCall
         if (c.useCRC32CIntrinsics) {
             registerForeignCall(UPDATE_BYTES_CRC32C, c.updateBytesCRC32C, NativeCall);
         }
-        if (c.updateBytesAdler32 != 0L) {
+        if (c.updateBytesAdler32 != null && !c.updateBytesAdler32.isNullPointer()) {
             registerForeignCall(UPDATE_BYTES_ADLER32, c.updateBytesAdler32, NativeCall);
         }
-        if (c.bigIntegerLeftShiftWorker != 0L) {
+        if (c.bigIntegerLeftShiftWorker != null && !c.bigIntegerLeftShiftWorker.isNullPointer()) {
             registerForeignCall(BIGINTEGER_LEFT_SHIFT_WORKER, c.bigIntegerLeftShiftWorker, NativeCall);
         }
-        if (c.bigIntegerRightShiftWorker != 0L) {
+        if (c.bigIntegerRightShiftWorker != null && !c.bigIntegerRightShiftWorker.isNullPointer()) {
             registerForeignCall(BIGINTEGER_RIGHT_SHIFT_WORKER, c.bigIntegerRightShiftWorker, NativeCall);
         }
-        if (c.electronicCodeBookEncrypt != 0L) {
+        if (c.electronicCodeBookEncrypt != null && !c.electronicCodeBookEncrypt.isNullPointer()) {
             registerForeignCall(ELECTRONIC_CODEBOOK_ENCRYPT_AESCRYPT, c.electronicCodeBookEncrypt, NativeCall);
         }
-        if (c.electronicCodeBookDecrypt != 0L) {
+        if (c.electronicCodeBookDecrypt != null && !c.electronicCodeBookDecrypt.isNullPointer()) {
             registerForeignCall(ELECTRONIC_CODEBOOK_DECRYPT_AESCRYPT, c.electronicCodeBookDecrypt, NativeCall);
         }
-        if (c.contDoYield != 0) {
+        if (c.contDoYield != null && !c.contDoYield.isNullPointer()) {
             registerForeignCall(CONTINUATION_DO_YIELD, c.contDoYield, NativeCall);
         }
 

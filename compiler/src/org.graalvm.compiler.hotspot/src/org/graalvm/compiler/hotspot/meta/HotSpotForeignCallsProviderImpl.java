@@ -202,9 +202,9 @@ public abstract class HotSpotForeignCallsProviderImpl implements HotSpotForeignC
     public void linkForeignCall(OptionValues options,
                     HotSpotProviders providers,
                     HotSpotForeignCallDescriptor descriptor,
-                    long address,
+                    MemoryAddress address,
                     boolean prependThread) {
-        if (address == 0) {
+        if (address == null || address.isNullPointer()) {
             throw new IllegalArgumentException("Can't link foreign call with zero address");
         }
         ForeignCallStub stub = new ForeignCallStub(options, jvmciRuntime, providers, address, descriptor, prependThread);
@@ -218,9 +218,9 @@ public abstract class HotSpotForeignCallsProviderImpl implements HotSpotForeignC
     public void invokeJavaMethodStub(OptionValues options,
                     HotSpotProviders providers,
                     HotSpotForeignCallDescriptor descriptor,
-                    long address,
+                    MemoryAddress address,
                     ResolvedJavaMethod staticMethod) {
-        if (address == 0) {
+        if (address == null || address.isNullPointer()) {
             throw new IllegalArgumentException("Can't link foreign call with zero address");
         }
         InvokeJavaMethodStub stub = new InvokeJavaMethodStub(options, jvmciRuntime, providers, address, descriptor, staticMethod);

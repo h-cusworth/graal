@@ -27,6 +27,7 @@ package org.graalvm.compiler.hotspot.stubs;
 import static org.graalvm.compiler.core.common.type.PrimitiveStamp.getBits;
 import static org.graalvm.compiler.hotspot.meta.HotSpotHostForeignCallsProvider.INVOKE_STATIC_METHOD_ONE_ARG;
 
+import jdk.internal.vm.memory.MemoryAddress;
 import org.graalvm.compiler.core.common.type.FloatStamp;
 import org.graalvm.compiler.core.common.type.ObjectStamp;
 import org.graalvm.compiler.core.common.type.PrimitiveStamp;
@@ -71,7 +72,7 @@ public class InvokeJavaMethodStub extends AbstractForeignCallStub {
     public InvokeJavaMethodStub(OptionValues options,
                     HotSpotJVMCIRuntime runtime,
                     HotSpotProviders providers,
-                    long address,
+                    MemoryAddress address,
                     HotSpotForeignCallDescriptor descriptor,
                     ResolvedJavaMethod staticMethod) {
         super(options, runtime, providers, address, descriptor, true);

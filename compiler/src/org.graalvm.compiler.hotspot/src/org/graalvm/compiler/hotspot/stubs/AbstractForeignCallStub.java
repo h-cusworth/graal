@@ -32,6 +32,7 @@ import static org.graalvm.compiler.hotspot.HotSpotForeignCallLinkage.RegisterEff
 import static org.graalvm.compiler.hotspot.HotSpotForeignCallLinkage.RegisterEffect.DESTROYS_ALL_CALLER_SAVE_REGISTERS;
 import static org.graalvm.compiler.nodes.ConstantNode.forBoolean;
 
+import jdk.internal.vm.memory.MemoryAddress;
 import org.graalvm.compiler.core.common.CompilationIdentifier;
 import org.graalvm.compiler.core.common.spi.ForeignCallDescriptor;
 import org.graalvm.compiler.core.common.type.StampFactory;
@@ -101,7 +102,7 @@ public abstract class AbstractForeignCallStub extends Stub {
     public AbstractForeignCallStub(OptionValues options,
                     HotSpotJVMCIRuntime runtime,
                     HotSpotProviders providers,
-                    long address,
+                    MemoryAddress address,
                     HotSpotForeignCallDescriptor descriptor,
                     boolean prependThread) {
         super(options, providers, HotSpotForeignCallLinkageImpl.create(providers.getMetaAccess(),
@@ -109,7 +110,7 @@ public abstract class AbstractForeignCallStub extends Stub {
                         providers.getWordTypes(),
                         providers.getForeignCalls(),
                         descriptor,
-                        0L,
+                        null,
                         COMPUTES_REGISTERS_KILLED,
                         JavaCall,
                         JavaCallee));
